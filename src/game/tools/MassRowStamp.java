@@ -1,4 +1,4 @@
 package game.tools;
 
-public class MassRowStamp implements SpecialTool{
+public class MassRowStamp implements SpecialTool {
 }

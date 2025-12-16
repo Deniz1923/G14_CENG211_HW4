@@ -2,7 +2,6 @@ package game.boxes;
 
 import game.tools.SpecialTool;
 import game.util.RandUtil;
-import java.util.Arrays;
 
 public abstract class Box {
     public static final int NUM_FACES = 6;
@@ -28,10 +27,6 @@ public abstract class Box {
             throw new IllegalArgumentException("Surfaces array must contain exactly " + NUM_FACES + " characters.");
         }
         this.surfaces = newSurfaces.clone();
-    }
-
-    public void setTopSide(char letter) {
-        this.surfaces[0] = letter;
     }
 
     public SpecialTool getTool() {
@@ -61,6 +56,10 @@ public abstract class Box {
 
     public char getTopSide() {
         return surfaces[0];
+    }
+
+    public void setTopSide(char letter) {
+        this.surfaces[0] = letter;
     }
 
     public abstract boolean canRoll();

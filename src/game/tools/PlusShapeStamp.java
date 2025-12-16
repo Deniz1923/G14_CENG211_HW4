@@ -1,4 +1,4 @@
 package game.tools;
 
-public class PlusShapeStamp implements SpecialTool{
+public class PlusShapeStamp implements SpecialTool {
 }

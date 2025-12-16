@@ -1,4 +1,4 @@
 package game.tools;
 
-public class BoxFixer implements SpecialTool{
+public class BoxFixer implements SpecialTool {
 }

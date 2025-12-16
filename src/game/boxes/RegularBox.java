@@ -1,7 +1,7 @@
 package game.boxes;
 
-public class RegularBox extends Box{
-    public RegularBox(){
+public class RegularBox extends Box {
+    public RegularBox() {
         super();
     }
 

@@ -1,4 +1,4 @@
 package game.tools;
 
-public class MassColumnStamp implements SpecialTool{
+public class MassColumnStamp implements SpecialTool {
 }
