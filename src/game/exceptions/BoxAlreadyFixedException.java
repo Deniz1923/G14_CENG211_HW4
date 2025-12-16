@@ -1,7 +1,7 @@
 package game.exceptions;
 
 public class BoxAlreadyFixedException extends RuntimeException {
-    public BoxAlreadyFixedException(String message) {
-        super(message);
+    public BoxAlreadyFixedException() {
+        super("This box is already fixed!");
     }
 }
