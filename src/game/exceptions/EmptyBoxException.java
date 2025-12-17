@@ -1,37 +1,44 @@
 package game.exceptions;
 
-
 /**
  * Exception thrown when a player opens a box that contains no SpecialTool.
  * <p>
  * This exception occurs during the second stage of a turn when the selected
  * box is empty. Empty boxes can occur in three ways:
- * 1. RegularBoxes have a 25% chance of being empty (no tool inside)
- * 2. FixedBoxes are always empty (0% chance of containing a tool)
- * 3. Boxes that have been previously opened and their tools were already used
+ * <ol>
+ *   <li>RegularBoxes have a 25% chance of being empty (no tool inside)</li>
+ *   <li>FixedBoxes are always empty (0% chance of containing a tool)</li>
+ *   <li>Boxes that have been previously opened and their tools were already used</li>
+ * </ol>
  * <p>
  * When this exception is thrown, the current turn is wasted and the game
  * continues to the next turn without any SpecialTool being acquired or used.
- *
- * @author CENG211 Student
- * @version 1.0
  */
 public class EmptyBoxException extends Exception {
 
     /**
-     * Constructs a new EmptyBoxException with no detail message.
+     * Constructs exception with default message.
      */
     public EmptyBoxException() {
         super("The selected box is empty!");
     }
 
     /**
-     * Constructs a new EmptyBoxException with the specified detail message.
+     * Constructs exception with custom message.
      *
-     * @param message the detail message explaining which box was empty
+     * @param message detailed explanation of the error
      */
     public EmptyBoxException(String message) {
         super(message);
+    }
+
+    /**
+     * Constructs a new EmptyBoxException with the specified cause.
+     *
+     * @param cause the cause of this exception
+     */
+    public EmptyBoxException(Throwable cause) {
+        super(cause);
     }
 
     /**
@@ -43,14 +50,5 @@ public class EmptyBoxException extends Exception {
      */
     public EmptyBoxException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    /**
-     * Constructs a new EmptyBoxException with the specified cause.
-     *
-     * @param cause the cause of this exception
-     */
-    public EmptyBoxException(Throwable cause) {
-        super(cause);
     }
 }

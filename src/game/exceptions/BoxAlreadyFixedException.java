@@ -1,21 +1,17 @@
 package game.exceptions;
 
 /**
- * Exception thrown when attempting to use a BoxFixer tool on a box that is
- * already a FixedBox.
+ * Exception thrown when attempting to use a BoxFixer tool on an already fixed box.
  * <p>
- * This exception occurs during the second stage of a turn when the player
- * acquires a BoxFixer tool and tries to apply it to a box that is already
- * fixed. Since a FixedBox cannot be rolled in any direction and its top side
- * stays the same at all times, it makes no sense to "fix" an already fixed box.
+ * A FixedBox cannot be "fixed" again since it's already immovable with a permanent
+ * top side. Using BoxFixer on it is an invalid operation.
  * <p>
- * When this exception is thrown, the current turn is wasted and the game
- * continues to the next turn. The BoxFixer tool is consumed but has no effect.
+ * When thrown, the current turn is wasted and the BoxFixer tool is consumed without effect.
  */
 public class BoxAlreadyFixedException extends Exception {
 
     /**
-     * Constructs a new BoxAlreadyFixedException with no detail message.
+     * Constructs exception with default message.
      */
     public BoxAlreadyFixedException() {
         super("The selected box is already a FixedBox!");
@@ -31,6 +27,15 @@ public class BoxAlreadyFixedException extends Exception {
     }
 
     /**
+     * Constructs a new BoxAlreadyFixedException with the specified cause.
+     *
+     * @param cause the cause of this exception
+     */
+    public BoxAlreadyFixedException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
      * Constructs a new BoxAlreadyFixedException with the specified detail message
      * and cause.
      *
@@ -39,14 +44,5 @@ public class BoxAlreadyFixedException extends Exception {
      */
     public BoxAlreadyFixedException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    /**
-     * Constructs a new BoxAlreadyFixedException with the specified cause.
-     *
-     * @param cause the cause of this exception
-     */
-    public BoxAlreadyFixedException(Throwable cause) {
-        super(cause);
     }
 }
