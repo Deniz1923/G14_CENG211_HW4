@@ -62,6 +62,23 @@ public abstract class Box {
         this.surfaces[0] = letter;
     }
 
+    /**
+     * Flips the box upside down, swapping top and bottom surfaces.
+     */
+    public void flip() {
+        char temp = surfaces[0];
+        surfaces[0] = surfaces[1];
+        surfaces[1] = temp;
+    }
+
+    /**
+     * Returns the type indicator character for grid display.
+     * R = RegularBox, U = UnchangingBox, X = FixedBox
+     *
+     * @return the type character
+     */
+    public abstract char getTypeChar();
+
     public abstract boolean canRoll();
 
     //4 surfaces are affected, a-> b-> c -> d
