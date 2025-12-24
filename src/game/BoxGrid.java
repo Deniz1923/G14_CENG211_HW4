@@ -3,6 +3,7 @@ package game;
 import game.boxes.Box;
 import game.boxes.FixedBox;
 import game.exceptions.UnmovableFixedBoxException;
+import game.util.Direction;
 import game.util.RandUtil;
 
 import java.util.ArrayList;
@@ -21,12 +22,23 @@ import java.util.ArrayList;
  * Alternative considered: LinkedList would have O(n) access time which is suboptimal
  * for frequent grid access operations in this game.
  */
+
+/**
+ * Represents the 8x8 grid of boxes in the puzzle game.
+ * Handles all grid-related operations including rolling, box access, and display.
+ * The grid uses 0-based indexing internally but displays 1-based positions to users.
+ */
 public class BoxGrid {
+    // Grid dimensions - fixed 8x8 as per specification
     public static final int GRID_SIZE = 8;
     
     // The grid is a List of Rows, where each Row is a List of Boxes
+    // Using ArrayList for O(1) random access to any box position
     private final ArrayList<ArrayList<Box>> grid;
 
+    /**
+     * Constructs a new 8x8 BoxGrid with randomly generated boxes.
+     */
     public BoxGrid() {
         this.grid = new ArrayList<>();
         initializeGrid();
@@ -35,7 +47,9 @@ public class BoxGrid {
     /**
      * Initializes the 8x8 grid with randomly generated boxes.
      * Box types are determined by RandUtil.generateRandomBox() with probabilities:
-     * 85% RegularBox, 10% UnchangingBox, 5% FixedBox
+     *   - 85% RegularBox
+     *   - 10% UnchangingBox
+     *   - 5% FixedBox
      */
     private void initializeGrid() {
         for (int row = 0; row < GRID_SIZE; row++) {
@@ -60,6 +74,7 @@ public class BoxGrid {
 
     /**
      * Sets the box at the specified position.
+     * Used by tools like BoxFixer to replace a box with a different type.
      *
      * @param row the row index (0-based)
      * @param col the column index (0-based)
@@ -71,6 +86,7 @@ public class BoxGrid {
 
     /**
      * Checks if the given position is on the edge of the grid.
+     * Edge positions are: row 0, row 7, column 0, or column 7.
      *
      * @param row the row index (0-based)
      * @param col the column index (0-based)
@@ -82,6 +98,7 @@ public class BoxGrid {
 
     /**
      * Checks if the given position is a corner of the grid.
+     * Corners are: (0,0), (0,7), (7,0), (7,7).
      *
      * @param row the row index (0-based)
      * @param col the column index (0-based)
@@ -93,66 +110,69 @@ public class BoxGrid {
 
     /**
      * Gets the two valid rolling directions for a corner box.
+     * Each corner has exactly two valid inward directions.
      *
      * @param row the row of the corner box
      * @param col the column of the corner box
-     * @return array of two valid directions, or null if not a corner
+     * @return array of two valid Direction values, or null if not a corner
      */
-    public String[] getCornerDirections(int row, int col) {
-        if (row == 0 && col == 0) return new String[]{"down", "right"};
-        if (row == 0 && col == GRID_SIZE - 1) return new String[]{"down", "left"};
-        if (row == GRID_SIZE - 1 && col == 0) return new String[]{"up", "right"};
-        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new String[]{"up", "left"};
+    public Direction[] getCornerDirections(int row, int col) {
+        // Top-left corner: can go down or right
+        if (row == 0 && col == 0) return new Direction[]{Direction.DOWN, Direction.RIGHT};
+        // Top-right corner: can go down or left
+        if (row == 0 && col == GRID_SIZE - 1) return new Direction[]{Direction.DOWN, Direction.LEFT};
+        // Bottom-left corner: can go up or right
+        if (row == GRID_SIZE - 1 && col == 0) return new Direction[]{Direction.UP, Direction.RIGHT};
+        // Bottom-right corner: can go up or left
+        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new Direction[]{Direction.UP, Direction.LEFT};
         return null;
     }
 
     /**
-     * Gets the rolling direction for an edge box.
+     * Gets the rolling direction for an edge box (non-corner).
+     * Non-corner edge boxes have exactly one valid direction (inward).
      *
      * @param row the row of the edge box
      * @param col the column of the edge box
-     * @return the direction to roll ("up", "down", "left", "right")
+     * @return the Direction to roll, or null if not an edge
      */
-    public String getRollDirection(int row, int col) {
-        if (row == 0) return "down";
-        if (row == GRID_SIZE - 1) return "up";
-        if (col == 0) return "right";
-        if (col == GRID_SIZE - 1) return "left";
+    public Direction getRollDirection(int row, int col) {
+        if (row == 0) return Direction.DOWN;         // Top edge rolls down
+        if (row == GRID_SIZE - 1) return Direction.UP; // Bottom edge rolls up
+        if (col == 0) return Direction.RIGHT;        // Left edge rolls right
+        if (col == GRID_SIZE - 1) return Direction.LEFT; // Right edge rolls left
         return null; // Not an edge
     }
 
     /**
      * Rolls boxes from an edge position with domino effect.
-     * FixedBoxes stop the domino effect (they and boxes behind them don't roll).
+     * All boxes in the row/column roll in sequence until:
+     *   - A FixedBox is encountered (it and boxes behind it don't roll)
+     *   - The opposite edge is reached
      *
      * @param startRow the starting row of the edge box
      * @param startCol the starting column of the edge box
-     * @param chosenDirection the direction to roll (required for corners, null for non-corners)
+     * @param chosenDirection the Direction to roll (required for corners, null for non-corners)
      * @throws UnmovableFixedBoxException if the starting edge box is a FixedBox
      */
-    public void rollFromEdge(int startRow, int startCol, String chosenDirection) throws UnmovableFixedBoxException {
+    public void rollFromEdge(int startRow, int startCol, Direction chosenDirection) throws UnmovableFixedBoxException {
         Box startBox = getBox(startRow, startCol);
         
-        // Check if starting box is a FixedBox
+        // Check if starting box is a FixedBox - cannot initiate roll from FixedBox
         if (startBox instanceof FixedBox) {
             throw new UnmovableFixedBoxException(
                 "Box at R" + (startRow + 1) + "-C" + (startCol + 1) + " is a FixedBox and CANNOT BE MOVED!");
         }
         
         // Use chosen direction for corners, otherwise calculate from edge position
-        String direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
+        Direction direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
         if (direction == null) return;
         
-        // Determine the row/column delta based on direction
-        int dRow = 0, dCol = 0;
-        switch (direction) {
-            case "up": dRow = -1; break;
-            case "down": dRow = 1; break;
-            case "left": dCol = -1; break;
-            case "right": dCol = 1; break;
-        }
+        // Get row/column delta from the Direction enum
+        int dRow = direction.getRowDelta();
+        int dCol = direction.getColDelta();
         
-        // Roll boxes in sequence until hitting a FixedBox or edge
+        // Roll boxes in sequence until hitting a FixedBox or grid boundary
         int currentRow = startRow;
         int currentCol = startCol;
         
@@ -160,15 +180,17 @@ public class BoxGrid {
                currentCol >= 0 && currentCol < GRID_SIZE) {
             Box currentBox = getBox(currentRow, currentCol);
             
+            // FixedBox stops the domino effect - it and boxes behind it don't roll
             if (currentBox instanceof FixedBox) {
-                // Stop rolling - FixedBox blocks further propagation
                 break;
             }
             
+            // Roll the box if it can be rolled (RegularBox and UnchangingBox can)
             if (currentBox.canRoll()) {
                 currentBox.roll(direction);
             }
             
+            // Move to the next box in the direction
             currentRow += dRow;
             currentCol += dCol;
         }
@@ -176,6 +198,7 @@ public class BoxGrid {
 
     /**
      * Counts the number of boxes that have the target letter on top.
+     * Used at the end of the game to calculate the player's score.
      *
      * @param targetLetter the target letter to count
      * @return the number of matching boxes
@@ -193,8 +216,9 @@ public class BoxGrid {
     }
 
     /**
-     * Displays the full net (all 6 sides) of a box.
-     * Format:
+     * Generates a string showing all 6 sides of a box in a cross-shaped net.
+     * 
+     * Layout (as per specification):
      *     -----
      *     | C |    (Back)
      * -------------
@@ -228,8 +252,11 @@ public class BoxGrid {
     }
 
     /**
-     * Generates the string representation of the grid.
-     * Format: | Type-TopLetter-Status | where Status is M (Mystery) or O (Opened/Fixed)
+     * Generates the string representation of the grid for display.
+     * Format: | Type-TopLetter-Status | where:
+     *   - Type: R (Regular), U (Unchanging), X (Fixed)
+     *   - TopLetter: The letter on the top side (A-H)
+     *   - Status: M (Mystery/unopened) or O (Opened/Fixed)
      *
      * @return formatted grid string
      */
@@ -237,20 +264,21 @@ public class BoxGrid {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        // Header row with column numbers
+        // Header row with column numbers (C1 through C8)
         sb.append("        ");
         for (int col = 0; col < GRID_SIZE; col++) {
             sb.append(String.format("C%d      ", col + 1));
         }
         sb.append("\n");
         
-        // Grid rows
+        // Grid rows (R1 through R8)
         for (int row = 0; row < GRID_SIZE; row++) {
             sb.append(String.format("R%d  ", row + 1));
             for (int col = 0; col < GRID_SIZE; col++) {
                 Box box = getBox(row, col);
-                char type = box.getTypeChar();
-                char topSide = box.getTopSide();
+                char type = box.getTypeChar();      // R, U, or X
+                char topSide = box.getTopSide();    // A-H
+                // Status: O if opened or FixedBox, M if mystery (unopened)
                 char status = (box.isOpen() || box instanceof FixedBox) ? 'O' : 'M';
                 sb.append(String.format("| %c-%c-%c |", type, topSide, status));
             }

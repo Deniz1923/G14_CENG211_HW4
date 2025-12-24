@@ -6,12 +6,40 @@ import game.boxes.FixedBox;
 import game.boxes.UnchangingBox;
 
 /**
- * A tool that re-stamps the top side of 5 boxes in a plus shape pattern.
- * Affects the selected box and its 4 adjacent neighbors (up, down, left, right).
- * Does not affect UnchangingBox or FixedBox types.
+ * A tool that re-stamps the top side of 5 boxes in a plus (+) shape pattern.
+ * 
+ * Effect:
+ *   - Stamps the selected box and its 4 adjacent neighbors (up, down, left, right)
+ *   - Each affected box has its top side set to the target letter
+ *   - Only affects RegularBox (which can be stamped)
+ *   - Does NOT affect UnchangingBox or FixedBox
+ *   - Handles grid boundaries gracefully (edge boxes have fewer neighbors)
+ * 
+ * Pattern (X = stamped):
+ *       X
+ *     X X X
+ *       X
+ * 
+ * Strategy: Good for creating clusters of matching boxes.
+ *           Can affect up to 5 boxes at once if used in the center of the grid.
  */
-public class PlusShapeStamp implements SpecialTool {
+public class PlusShapeStamp extends SpecialTool {
+
+    /**
+     * Constructs a new PlusShapeStamp tool.
+     */
+    public PlusShapeStamp() {
+        super("PlusShapeStamp");
+    }
     
+    /**
+     * Applies the PlusShapeStamp to stamp boxes in a plus pattern.
+     * 
+     * @param grid         the box grid
+     * @param targetLetter the letter to stamp on top of each box
+     * @param row          the center row of the plus (0-based)
+     * @param col          the center column of the plus (0-based)
+     */
     @Override
     public void apply(BoxGrid grid, char targetLetter, int row, int col) {
         // Offsets for plus shape: center, up, down, left, right
@@ -21,22 +49,17 @@ public class PlusShapeStamp implements SpecialTool {
             int targetRow = row + offset[0];
             int targetCol = col + offset[1];
             
-            // Check bounds
+            // Check bounds - skip positions outside the grid
             if (targetRow >= 0 && targetRow < BoxGrid.GRID_SIZE &&
                 targetCol >= 0 && targetCol < BoxGrid.GRID_SIZE) {
                 
                 Box box = grid.getBox(targetRow, targetCol);
                 
-                // Skip unchangeable boxes
+                // Skip UnchangingBox and FixedBox - their surfaces can't be changed
                 if (!(box instanceof UnchangingBox) && !(box instanceof FixedBox)) {
                     box.setTopSide(targetLetter);
                 }
             }
         }
-    }
-    
-    @Override
-    public String getName() {
-        return "PlusShapeStamp";
     }
 }
