@@ -27,4 +27,17 @@ public class FixedBox extends Box {
     public void roll(String direction) {
         throw new UnsupportedOperationException("FixedBox cannot be rolled!");
     }
+
+    @Override
+    public void setSurfaces(char[] newSurfaces) {
+        // FixedBox surfaces can only be set during initialization via BoxFixer
+        // After creation, surfaces are immutable
+        super.setSurfaces(newSurfaces);
+    }
+
+    @Override
+    public void setTopSide(char letter) {
+        // FixedBox top side cannot be changed by stamp tools
+        // Intentionally empty to prevent changes
+    }
 }

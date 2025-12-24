@@ -81,6 +81,32 @@ public class BoxGrid {
     }
 
     /**
+     * Checks if the given position is a corner of the grid.
+     *
+     * @param row the row index (0-based)
+     * @param col the column index (0-based)
+     * @return true if the position is a corner
+     */
+    public boolean isCorner(int row, int col) {
+        return (row == 0 || row == GRID_SIZE - 1) && (col == 0 || col == GRID_SIZE - 1);
+    }
+
+    /**
+     * Gets the two valid rolling directions for a corner box.
+     *
+     * @param row the row of the corner box
+     * @param col the column of the corner box
+     * @return array of two valid directions, or null if not a corner
+     */
+    public String[] getCornerDirections(int row, int col) {
+        if (row == 0 && col == 0) return new String[]{"down", "right"};
+        if (row == 0 && col == GRID_SIZE - 1) return new String[]{"down", "left"};
+        if (row == GRID_SIZE - 1 && col == 0) return new String[]{"up", "right"};
+        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new String[]{"up", "left"};
+        return null;
+    }
+
+    /**
      * Gets the rolling direction for an edge box.
      *
      * @param row the row of the edge box
@@ -101,9 +127,10 @@ public class BoxGrid {
      *
      * @param startRow the starting row of the edge box
      * @param startCol the starting column of the edge box
+     * @param chosenDirection the direction to roll (required for corners, null for non-corners)
      * @throws UnmovableFixedBoxException if the starting edge box is a FixedBox
      */
-    public void rollFromEdge(int startRow, int startCol) throws UnmovableFixedBoxException {
+    public void rollFromEdge(int startRow, int startCol, String chosenDirection) throws UnmovableFixedBoxException {
         Box startBox = getBox(startRow, startCol);
         
         // Check if starting box is a FixedBox
@@ -112,7 +139,8 @@ public class BoxGrid {
                 "Box at R" + (startRow + 1) + "-C" + (startCol + 1) + " is a FixedBox and CANNOT BE MOVED!");
         }
         
-        String direction = getRollDirection(startRow, startCol);
+        // Use chosen direction for corners, otherwise calculate from edge position
+        String direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
         if (direction == null) return;
         
         // Determine the row/column delta based on direction

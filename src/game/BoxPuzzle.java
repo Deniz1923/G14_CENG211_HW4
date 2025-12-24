@@ -48,47 +48,49 @@ public class BoxPuzzle {
             
             try {
                 int[] edgePosition = menu.selectEdgeBox();
-                if (edgePosition == null) {
-                    // Player chose to view box net, don't consume turn
-                    continue;
-                }
                 
                 int edgeRow = edgePosition[0];
                 int edgeCol = edgePosition[1];
                 
-                grid.rollFromEdge(edgeRow, edgeCol);
-                menu.displayRollSuccess(edgeRow, edgeCol);
+                // Handle corner case - player must choose direction
+                String chosenDirection = null;
+                if (grid.isCorner(edgeRow, edgeCol)) {
+                    chosenDirection = menu.selectCornerDirection(edgeRow, edgeCol);
+                }
+                
+                grid.rollFromEdge(edgeRow, edgeCol, chosenDirection);
+                menu.displayRollSuccess(edgeRow, edgeCol, chosenDirection != null ? chosenDirection : grid.getRollDirection(edgeRow, edgeCol));
                 menu.displayGrid();
                 
                 // SECOND STAGE: Box opening for tool
                 menu.displaySecondStageHeader(currentTurn);
-                int[] boxPosition = menu.selectBoxToOpen(edgeRow, edgeCol);
+                int[] boxPosition = menu.selectBoxToOpen(edgeRow, edgeCol, chosenDirection);
                 int boxRow = boxPosition[0];
                 int boxCol = boxPosition[1];
                 
-                SpecialTool tool = openBox(boxRow, boxCol);
-                menu.displayToolAcquired(tool, boxRow, boxCol);
+                SpecialTool tool = null;
+                try {
+                    tool = openBox(boxRow, boxCol);
+                    menu.displayToolAcquired(tool, boxRow, boxCol);
+                } catch (EmptyBoxException e) {
+                    // Empty box in Stage 2 doesn't waste turn, just no tool acquired
+                    menu.displayEmptyBox(boxRow, boxCol);
+                }
                 
-                // Tool usage (if tool was acquired)
+                // Tool usage is mandatory when tool is acquired
                 if (tool != null) {
-                    boolean useTool = menu.askToUseTool(tool);
-                    if (useTool) {
-                        int[] toolPosition = menu.selectBoxForTool();
-                        try {
-                            tool.apply(grid, targetLetter, toolPosition[0], toolPosition[1]);
-                            menu.displayToolUsed(tool, toolPosition[0], toolPosition[1]);
-                        } catch (BoxAlreadyFixedException | UnmovableFixedBoxException e) {
-                            menu.displayError(e.getMessage());
-                        }
+                    int[] toolPosition = menu.selectBoxForTool(tool);
+                    try {
+                        tool.apply(grid, targetLetter, toolPosition[0], toolPosition[1]);
+                        menu.displayToolUsed(tool, toolPosition[0], toolPosition[1]);
+                    } catch (BoxAlreadyFixedException | UnmovableFixedBoxException e) {
+                        menu.displayError(e.getMessage());
                     }
                 }
                 
                 menu.displayGrid();
                 
             } catch (UnmovableFixedBoxException e) {
-                menu.displayError(e.getMessage());
-                menu.displayTurnWasted();
-            } catch (EmptyBoxException e) {
                 menu.displayError(e.getMessage());
                 menu.displayTurnWasted();
             }
@@ -98,6 +100,7 @@ public class BoxPuzzle {
         
         endGame();
     }
+
 
     /**
      * Opens a box and retrieves its tool.
@@ -131,6 +134,7 @@ public class BoxPuzzle {
      */
     private void endGame() {
         menu.displayGameEnd();
+        menu.close();
     }
 
     /**
@@ -142,6 +146,13 @@ public class BoxPuzzle {
 
         public GameMenu() {
             this.scanner = new Scanner(System.in);
+        }
+
+        /**
+         * Closes the scanner resource.
+         */
+        public void close() {
+            scanner.close();
         }
 
         public void displayWelcome() {
@@ -171,23 +182,24 @@ public class BoxPuzzle {
 
         /**
          * Prompts user to select an edge box for rolling.
-         * Allows viewing a box net before selection.
+         * Allows viewing a box net before selection (as an optional action).
          *
-         * @return [row, col] array of selected edge box, or null if viewing net
+         * @return [row, col] array of selected edge box
          */
         public int[] selectEdgeBox() {
             while (true) {
-                System.out.println("Enter the edge box you want to roll (format: R1-C5) or VIEW to see a box net:");
+                System.out.println("Enter the edge box you want to roll (format: R1-C5 or 1-5) or VIEW to see a box net:");
                 String input = scanner.nextLine().trim().toUpperCase();
                 
                 if (input.equals("VIEW")) {
                     viewBoxNet();
-                    return null;
+                    // Continue prompting - VIEW doesn't consume edge selection
+                    continue;
                 }
                 
                 int[] position = parsePosition(input);
                 if (position == null) {
-                    System.out.println("Invalid format! Use R#-C# (e.g., R1-C5)");
+                    System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
                 
@@ -200,6 +212,28 @@ public class BoxPuzzle {
                 }
                 
                 return position;
+            }
+        }
+
+        /**
+         * Prompts user to select a direction for a corner box.
+         *
+         * @param row the row of the corner box
+         * @param col the column of the corner box
+         * @return the selected direction
+         */
+        public String selectCornerDirection(int row, int col) {
+            String[] directions = grid.getCornerDirections(row, col);
+            while (true) {
+                System.out.println("Corner box selected! Choose direction " + 
+                    directions[0].toUpperCase() + " or " + directions[1].toUpperCase() + ":");
+                String input = scanner.nextLine().trim().toLowerCase();
+                
+                if (input.equals(directions[0]) || input.equals(directions[1])) {
+                    return input;
+                }
+                System.out.println("Invalid direction! Enter " + directions[0].toUpperCase() + 
+                    " or " + directions[1].toUpperCase() + ".");
             }
         }
 
@@ -227,25 +261,33 @@ public class BoxPuzzle {
          *
          * @param edgeRow the row of the edge box that initiated rolling
          * @param edgeCol the column of the edge box that initiated rolling
+         * @param direction the direction of rolling (for corner boxes)
          * @return [row, col] of selected box
          */
-        public int[] selectBoxToOpen(int edgeRow, int edgeCol) {
+        public int[] selectBoxToOpen(int edgeRow, int edgeCol, String direction) {
             while (true) {
-                System.out.println("Select a box from the rolled row/column to open (format: R1-C5):");
+                System.out.println("Select a box from the rolled row/column to open (format: R1-C5 or 1-5) or VIEW to see a box net:");
                 String input = scanner.nextLine().trim().toUpperCase();
+                
+                if (input.equals("VIEW")) {
+                    viewBoxNet();
+                    continue;
+                }
                 
                 int[] position = parsePosition(input);
                 if (position == null) {
-                    System.out.println("Invalid format! Use R#-C# (e.g., R1-C5)");
+                    System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
                 
                 int row = position[0];
                 int col = position[1];
                 
-                // Check if the box is in the same row or column as the edge
+                // Check if the box is in the correct row or column based on direction
                 boolean validSelection = false;
-                if (edgeRow == 0 || edgeRow == BoxGrid.GRID_SIZE - 1) {
+                String actualDirection = (direction != null) ? direction : grid.getRollDirection(edgeRow, edgeCol);
+                
+                if (actualDirection.equals("up") || actualDirection.equals("down")) {
                     // Rolled vertically, must be same column
                     validSelection = (col == edgeCol);
                 } else {
@@ -265,16 +307,17 @@ public class BoxPuzzle {
         /**
          * Prompts user to select any box for tool application.
          *
+         * @param tool the tool being applied
          * @return [row, col] of selected box
          */
-        public int[] selectBoxForTool() {
+        public int[] selectBoxForTool(SpecialTool tool) {
             while (true) {
-                System.out.println("Select a box to apply the tool (format: R1-C5):");
+                System.out.println("Select a box to apply " + tool.getName() + " (format: R1-C5 or 1-5):");
                 String input = scanner.nextLine().trim().toUpperCase();
                 
                 int[] position = parsePosition(input);
                 if (position == null) {
-                    System.out.println("Invalid format! Use R#-C# (e.g., R1-C5)");
+                    System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
                 
@@ -282,22 +325,15 @@ public class BoxPuzzle {
             }
         }
 
-        /**
-         * Asks if the player wants to use the acquired tool.
-         *
-         * @param tool the acquired tool
-         * @return true if player wants to use it
-         */
-        public boolean askToUseTool(SpecialTool tool) {
-            System.out.println("Do you want to use " + tool.getName() + "? (Y/N):");
-            String input = scanner.nextLine().trim().toUpperCase();
-            return input.equals("Y") || input.equals("YES");
+        public void displayRollSuccess(int row, int col, String direction) {
+            System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) + 
+                    " has been rolled " + direction + ".");
+            System.out.println();
         }
 
-        public void displayRollSuccess(int row, int col) {
-            String direction = grid.getRollDirection(row, col);
+        public void displayEmptyBox(int row, int col) {
             System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) + 
-                    " has been flipped " + direction + ".");
+                    " is opened. It is EMPTY! No tool acquired.");
             System.out.println();
         }
 
@@ -339,21 +375,28 @@ public class BoxPuzzle {
         }
 
         /**
-         * Parses a position string in format "R#-C#" to [row, col] array.
+         * Parses a position string in format "R#-C#" or "#-#" to [row, col] array.
          *
          * @param input the position string (case-insensitive)
          * @return [row, col] as 0-based indices, or null if invalid
          */
         private int[] parsePosition(String input) {
             try {
-                // Format: R1-C5 or r1-c5
                 String[] parts = input.split("-");
                 if (parts.length != 2) return null;
                 
-                if (!parts[0].startsWith("R") || !parts[1].startsWith("C")) return null;
+                int row, col;
                 
-                int row = Integer.parseInt(parts[0].substring(1)) - 1;
-                int col = Integer.parseInt(parts[1].substring(1)) - 1;
+                // Format: R1-C5 or r1-c5
+                if (parts[0].startsWith("R") && parts[1].startsWith("C")) {
+                    row = Integer.parseInt(parts[0].substring(1)) - 1;
+                    col = Integer.parseInt(parts[1].substring(1)) - 1;
+                }
+                // Format: 1-5 (row-col directly)
+                else {
+                    row = Integer.parseInt(parts[0]) - 1;
+                    col = Integer.parseInt(parts[1]) - 1;
+                }
                 
                 if (row < 0 || row >= BoxGrid.GRID_SIZE || col < 0 || col >= BoxGrid.GRID_SIZE) {
                     return null;

@@ -3,10 +3,23 @@ package game.boxes;
 import game.tools.SpecialTool;
 import game.util.RandUtil;
 
+/**
+ * Abstract base class representing a box in the puzzle game.
+ * Each box has 6 surfaces with letters, can contain a tool, and tracks open/empty state.
+ * Subclasses define specific behaviors for rolling, stamping, and fixing.
+ */
 public abstract class Box {
     public static final int NUM_FACES = 6;
-    // Index Mapping: 0=Top, 1=Bottom, 2=Front, 3=Back, 4=Left, 5=Right
-    private char[] surfaces; //index 0 is the top
+    
+    // Surface index constants for clarity
+    protected static final int TOP = 0;
+    protected static final int BOTTOM = 1;
+    protected static final int FRONT = 2;
+    protected static final int BACK = 3;
+    protected static final int LEFT = 4;
+    protected static final int RIGHT = 5;
+    
+    private char[] surfaces; // Index mapping: 0=Top, 1=Bottom, 2=Front, 3=Back, 4=Left, 5=Right
     private SpecialTool tool;
     private boolean isOpen;
     private boolean isEmpty;
@@ -66,9 +79,9 @@ public abstract class Box {
      * Flips the box upside down, swapping top and bottom surfaces.
      */
     public void flip() {
-        char temp = surfaces[0];
-        surfaces[0] = surfaces[1];
-        surfaces[1] = temp;
+        char temp = surfaces[TOP];
+        surfaces[TOP] = surfaces[BOTTOM];
+        surfaces[BOTTOM] = temp;
     }
 
     /**
@@ -81,7 +94,9 @@ public abstract class Box {
 
     public abstract boolean canRoll();
 
-    //4 surfaces are affected, a-> b-> c -> d
+    /**
+     * Rotates 4 surfaces in a cycle: a -> b -> c -> d -> a
+     */
     private void swapSurfaces(int a, int b, int c, int d) {
         char temp = surfaces[a];
         surfaces[a] = surfaces[b];
@@ -97,16 +112,16 @@ public abstract class Box {
 
         switch (direction.toLowerCase()) {
             case "right":
-                swapSurfaces(0, 4, 1, 5);
+                swapSurfaces(TOP, LEFT, BOTTOM, RIGHT);
                 break;
             case "left":
-                swapSurfaces(0, 5, 1, 4);
+                swapSurfaces(TOP, RIGHT, BOTTOM, LEFT);
                 break;
             case "up":
-                swapSurfaces(0, 2, 1, 3);
+                swapSurfaces(TOP, FRONT, BOTTOM, BACK);
                 break;
             case "down":
-                swapSurfaces(0, 3, 1, 2);
+                swapSurfaces(TOP, BACK, BOTTOM, FRONT);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid direction: " + direction);
