@@ -1,8 +1,8 @@
 package game.tools;
 
-import game.core.BoxGrid;
 import game.boxes.Box;
 import game.boxes.FixedBox;
+import game.core.BoxGrid;
 import game.exceptions.UnmovableFixedBoxException;
 
 /**

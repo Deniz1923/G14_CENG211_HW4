@@ -1,9 +1,9 @@
 package game.tools;
 
-import game.core.BoxGrid;
 import game.boxes.Box;
 import game.boxes.FixedBox;
 import game.boxes.UnchangingBox;
+import game.core.BoxGrid;
 
 /**
  * A tool that re-stamps the top side of all boxes in a specific row.

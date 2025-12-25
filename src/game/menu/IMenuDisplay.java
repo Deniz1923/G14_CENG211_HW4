@@ -48,7 +48,7 @@ public interface IMenuDisplay {
     /**
      * Displays a success message after rolling boxes.
      *
-     * @param direction the direction of rolling
+     * @param direction   the direction of rolling
      * @param hitFixedBox true if a FixedBox blocked the roll
      */
     void displayRollSuccess(Direction direction, boolean hitFixedBox);

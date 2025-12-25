@@ -4,7 +4,7 @@ import game.core.BoxPuzzle;
  * BoxPuzzleApp - Main entry point for the Box Top Side Matching Puzzle Game.
  * <p>
  * This application implements a puzzle game where players attempt to match
- * the top sides of boxes on an 8x8 grid to a randomly selected target letter.
+ * the top sides of boxes on a 8x8 grid to a randomly selected target letter.
  * <p>
  * The game consists of 5 turns, where each turn has two stages:
  * 1. First Stage: Select an edge box to roll (creates domino effect)

@@ -47,9 +47,9 @@ public class BoxGrid {
     /**
      * Initializes the 8x8 grid with randomly generated boxes.
      * Box types are determined by RandUtil.generateRandomBox() with probabilities:
-     *   - 85% RegularBox
-     *   - 10% UnchangingBox
-     *   - 5% FixedBox
+     * - 85% RegularBox
+     * - 10% UnchangingBox
+     * - 5% FixedBox
      */
     private void initializeGrid() {
         for (int row = 0; row < GRID_SIZE; row++) {
@@ -147,11 +147,11 @@ public class BoxGrid {
     /**
      * Rolls boxes from an edge position with domino effect.
      * All boxes in the row/column roll in sequence until:
-     *   - A FixedBox is encountered (it and boxes behind it don't roll)
-     *   - The opposite edge is reached
+     * - A FixedBox is encountered (it and boxes behind it don't roll)
+     * - The opposite edge is reached
      *
-     * @param startRow the starting row of the edge box
-     * @param startCol the starting column of the edge box
+     * @param startRow        the starting row of the edge box
+     * @param startCol        the starting column of the edge box
      * @param chosenDirection the Direction to roll (required for corners, null for non-corners)
      * @return true if a FixedBox was encountered during rolling
      * @throws UnmovableFixedBoxException if the starting edge box is a FixedBox
@@ -197,7 +197,7 @@ public class BoxGrid {
             currentRow += dRow;
             currentCol += dCol;
         }
-        
+
         return hitFixedBox;
     }
 
@@ -224,15 +224,15 @@ public class BoxGrid {
      * Generates a string showing all 6 sides of a box in a cross-shaped net.
      * <p>
      * Layout (as per specification):
-     *     -----
-     *     | C |    (Back)
+     * -----
+     * | C |    (Back)
      * -------------
      * | H | B | E |  (Left, Top, Right)
      * -------------
-     *     | F |    (Front)
-     *     -----
-     *     | A |    (Bottom)
-     *     -----
+     * | F |    (Front)
+     * -----
+     * | A |    (Bottom)
+     * -----
      *
      * @param row the row of the box
      * @param col the column of the box
@@ -257,9 +257,9 @@ public class BoxGrid {
     /**
      * Generates the string representation of the grid for display.
      * Format: | Type-TopLetter-Status | where:
-     *   - Type: R (Regular), U (Unchanging), X (Fixed)
-     *   - TopLetter: The letter on the top side (A-H)
-     *   - Status: M (Mystery/unopened) or O (Opened/Fixed)
+     * - Type: R (Regular), U (Unchanging), X (Fixed)
+     * - TopLetter: The letter on the top side (A-H)
+     * - Status: M (Mystery/unopened) or O (Opened/Fixed)
      *
      * @return formatted grid string
      */
