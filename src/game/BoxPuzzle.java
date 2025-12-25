@@ -1,7 +1,6 @@
 package game;
 
 import game.boxes.Box;
-import game.boxes.FixedBox;
 import game.exceptions.BoxAlreadyFixedException;
 import game.exceptions.EmptyBoxException;
 import game.exceptions.UnmovableFixedBoxException;
@@ -19,16 +18,16 @@ import java.util.Scanner;
 public class BoxPuzzle {
     // Total number of turns in the game (as per specification)
     private static final int TOTAL_TURNS = 5;
-    
+
     // The 8x8 grid of boxes
     private final BoxGrid grid;
-    
+
     // The randomly selected target letter (A-H) that players try to match
     private final char targetLetter;
-    
+
     // Inner class handling all menu operations and user interactions
     private final GameMenu menu;
-    
+
     // Tracks the current turn number (1 to 5)
     private int currentTurn;
 
@@ -41,50 +40,50 @@ public class BoxPuzzle {
         this.targetLetter = RandUtil.generateTargetLetter();
         this.menu = new GameMenu();
         this.currentTurn = 1;
-        
+
         startGame();
     }
 
     /**
      * Starts and runs the main game loop.
      * Each turn consists of two stages:
-     *   Stage 1: Edge box selection and rolling (domino effect)
-     *   Stage 2: Box opening and tool usage
+     * Stage 1: Edge box selection and rolling (domino effect)
+     * Stage 2: Box opening and tool usage
      */
     private void startGame() {
         menu.displayWelcome();
         menu.displayGrid();
-        
+
         // Main game loop - runs for TOTAL_TURNS turns
         while (currentTurn <= TOTAL_TURNS) {
             // FIRST STAGE: Edge box selection and rolling
             menu.displayFirstStageHeader(currentTurn);
-            
+
             try {
                 // Get player's edge box selection
                 int[] edgePosition = menu.selectEdgeBox();
-                
+
                 int edgeRow = edgePosition[0];
                 int edgeCol = edgePosition[1];
-                
+
                 // Handle corner case - player must choose direction (corners have 2 valid directions)
                 Direction chosenDirection = null;
                 if (grid.isCorner(edgeRow, edgeCol)) {
                     chosenDirection = menu.selectCornerDirection(edgeRow, edgeCol);
                 }
-                
+
                 // Execute the roll with domino effect
                 grid.rollFromEdge(edgeRow, edgeCol, chosenDirection);
                 Direction displayDirection = (chosenDirection != null) ? chosenDirection : grid.getRollDirection(edgeRow, edgeCol);
                 menu.displayRollSuccess(edgeRow, edgeCol, displayDirection);
                 menu.displayGrid();
-                
+
                 // SECOND STAGE: Box opening for tool
                 menu.displaySecondStageHeader(currentTurn);
                 int[] boxPosition = menu.selectBoxToOpen(edgeRow, edgeCol, displayDirection);
                 int boxRow = boxPosition[0];
                 int boxCol = boxPosition[1];
-                
+
                 // Attempt to open the selected box and retrieve a tool
                 SpecialTool tool = null;
                 try {
@@ -94,7 +93,7 @@ public class BoxPuzzle {
                     // Empty box - no tool acquired, but turn continues normally
                     menu.displayEmptyBox(boxRow, boxCol);
                 }
-                
+
                 // Tool usage is mandatory when a tool is acquired
                 if (tool != null) {
                     int[] toolPosition = menu.selectBoxForTool(tool);
@@ -107,18 +106,18 @@ public class BoxPuzzle {
                         menu.displayError(e.getMessage());
                     }
                 }
-                
+
                 menu.displayGrid();
-                
+
             } catch (UnmovableFixedBoxException e) {
                 // Selected edge box was a FixedBox - turn is wasted
                 menu.displayError(e.getMessage());
                 menu.displayTurnWasted();
             }
-            
+
             currentTurn++;
         }
-        
+
         // All turns completed - end the game
         endGame();
     }
@@ -126,34 +125,34 @@ public class BoxPuzzle {
     /**
      * Opens a box and retrieves its tool using generics.
      * Marks the box as opened and removes the tool from it.
-     * 
+     * <p>
      * This method demonstrates the use of generics for tool acquisition
      * as required by the specification (T extends SpecialTool).
      *
-     * @param <T>  the type of tool, extends SpecialTool
-     * @param row  the row of the box (0-based)
-     * @param col  the column of the box (0-based)
+     * @param <T> the type of tool, extends SpecialTool
+     * @param row the row of the box (0-based)
+     * @param col the column of the box (0-based)
      * @return the tool inside the box (cast to type T)
      * @throws EmptyBoxException if the box is empty or already opened
      */
     @SuppressWarnings("unchecked")
     private <T extends SpecialTool> T openBox(int row, int col) throws EmptyBoxException {
         Box box = grid.getBox(row, col);
-        
+
         // Check if box was already opened in a previous turn
         if (box.isOpen()) {
             throw new EmptyBoxException("Box at R" + (row + 1) + "-C" + (col + 1) + " has already been opened!");
         }
-        
+
         // Mark the box as opened
         box.setOpen(true);
         SpecialTool tool = box.getTool();
-        
+
         // Check if box is empty (no tool inside)
         if (tool == null || box.isEmpty()) {
             throw new EmptyBoxException("Box at R" + (row + 1) + "-C" + (col + 1) + " is empty!");
         }
-        
+
         // Remove tool from box after acquiring (can only be used once)
         box.setTool(null);
         return (T) tool;
@@ -212,6 +211,7 @@ public class BoxPuzzle {
 
         /**
          * Displays the header for the first stage of a turn.
+         *
          * @param turn the current turn number
          */
         public void displayFirstStageHeader(int turn) {
@@ -221,6 +221,7 @@ public class BoxPuzzle {
 
         /**
          * Displays the header for the second stage of a turn.
+         *
          * @param turn the current turn number
          */
         public void displaySecondStageHeader(int turn) {
@@ -246,29 +247,29 @@ public class BoxPuzzle {
             while (true) {
                 System.out.println("Enter the edge box you want to roll (format: R1-C5 or 1-5) or VIEW to see a box net:");
                 String input = scanner.nextLine().trim().toUpperCase();
-                
+
                 // Check if user wants to view a box net
                 if (input.equals("VIEW")) {
                     viewBoxNet();
                     continue; // VIEW doesn't consume edge selection - prompt again
                 }
-                
+
                 // Parse the position input
                 int[] position = parsePosition(input);
                 if (position == null) {
                     System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
-                
+
                 int row = position[0];
                 int col = position[1];
-                
+
                 // Validate that the selected position is on the edge
                 if (!grid.isEdge(row, col)) {
                     System.out.println("Selected box is not on the edge! Choose from row 1, row 8, column 1, or column 8.");
                     continue;
                 }
-                
+
                 return position;
             }
         }
@@ -284,21 +285,21 @@ public class BoxPuzzle {
         public Direction selectCornerDirection(int row, int col) {
             // Get the two valid directions for this corner
             Direction[] directions = grid.getCornerDirections(row, col);
-            
+
             while (true) {
-                System.out.println("Corner box selected! Choose direction " + 
-                    directions[0].name() + " or " + directions[1].name() + ":");
+                System.out.println("Corner box selected! Choose direction " +
+                        directions[0].name() + " or " + directions[1].name() + ":");
                 String input = scanner.nextLine().trim().toLowerCase();
-                
+
                 // Convert input to Direction enum
                 Direction selected = Direction.fromString(input);
-                
+
                 // Validate the selected direction
                 if (selected == directions[0] || selected == directions[1]) {
                     return selected;
                 }
-                System.out.println("Invalid direction! Enter " + directions[0].name() + 
-                    " or " + directions[1].name() + ".");
+                System.out.println("Invalid direction! Enter " + directions[0].name() +
+                        " or " + directions[1].name() + ".");
             }
         }
 
@@ -309,13 +310,13 @@ public class BoxPuzzle {
         private void viewBoxNet() {
             System.out.println("Enter box position to view (format: R1-C5):");
             String input = scanner.nextLine().trim().toUpperCase();
-            
+
             int[] position = parsePosition(input);
             if (position == null) {
                 System.out.println("Invalid format!");
                 return;
             }
-            
+
             // Display the box net
             System.out.println();
             System.out.println("Box at R" + (position[0] + 1) + "-C" + (position[1] + 1) + ":");
@@ -327,8 +328,8 @@ public class BoxPuzzle {
          * Prompts user to select a box to open from the rolled row/column.
          * Only boxes in the same row or column as the roll are valid selections.
          *
-         * @param edgeRow the row of the edge box that initiated rolling
-         * @param edgeCol the column of the edge box that initiated rolling
+         * @param edgeRow   the row of the edge box that initiated rolling
+         * @param edgeCol   the column of the edge box that initiated rolling
          * @param direction the Direction of rolling
          * @return [row, col] of selected box (0-based indices)
          */
@@ -336,26 +337,26 @@ public class BoxPuzzle {
             while (true) {
                 System.out.println("Select a box from the rolled row/column to open (format: R1-C5 or 1-5) or VIEW to see a box net:");
                 String input = scanner.nextLine().trim().toUpperCase();
-                
+
                 // Check if user wants to view a box net
                 if (input.equals("VIEW")) {
                     viewBoxNet();
                     continue;
                 }
-                
+
                 // Parse the position input
                 int[] position = parsePosition(input);
                 if (position == null) {
                     System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
-                
+
                 int row = position[0];
                 int col = position[1];
-                
+
                 // Determine if selection is valid based on roll direction
                 boolean validSelection = false;
-                
+
                 if (direction == Direction.UP || direction == Direction.DOWN) {
                     // Rolled vertically - selected box must be in same column
                     validSelection = (col == edgeCol);
@@ -363,12 +364,12 @@ public class BoxPuzzle {
                     // Rolled horizontally - selected box must be in same row
                     validSelection = (row == edgeRow);
                 }
-                
+
                 if (!validSelection) {
                     System.out.println("Selected box was not in the rolled row/column!");
                     continue;
                 }
-                
+
                 return position;
             }
         }
@@ -384,13 +385,13 @@ public class BoxPuzzle {
             while (true) {
                 System.out.println("Select a box to apply " + tool.getName() + " (format: R1-C5 or 1-5):");
                 String input = scanner.nextLine().trim().toUpperCase();
-                
+
                 int[] position = parsePosition(input);
                 if (position == null) {
                     System.out.println("Invalid format! Use R#-C# or #-# (e.g., R1-C5 or 1-5)");
                     continue;
                 }
-                
+
                 return position;
             }
         }
@@ -399,7 +400,7 @@ public class BoxPuzzle {
          * Displays a success message after rolling boxes.
          */
         public void displayRollSuccess(int row, int col, Direction direction) {
-            System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) + 
+            System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
                     " has been rolled " + direction.name().toLowerCase() + ".");
             System.out.println();
         }
@@ -408,7 +409,7 @@ public class BoxPuzzle {
          * Displays a message when an empty box is opened.
          */
         public void displayEmptyBox(int row, int col) {
-            System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) + 
+            System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
                     " is opened. It is EMPTY! No tool acquired.");
             System.out.println();
         }
@@ -418,7 +419,7 @@ public class BoxPuzzle {
          */
         public void displayToolAcquired(SpecialTool tool, int row, int col) {
             if (tool != null) {
-                System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) + 
+                System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
                         " is opened. It contains a SpecialTool --> " + tool.getName());
                 System.out.println();
             }
@@ -454,13 +455,13 @@ public class BoxPuzzle {
             System.out.println();
             System.out.println("The final state of the box grid:");
             displayGrid();
-            
+
             // Count how many boxes have the target letter on top
             int matchCount = grid.countMatchingBoxes(targetLetter);
-            
+
             System.out.println("********* GAME OVER *********");
             System.out.println();
-            System.out.println("THE TOTAL NUMBER OF TARGET LETTER \"" + targetLetter + 
+            System.out.println("THE TOTAL NUMBER OF TARGET LETTER \"" + targetLetter +
                     "\" IN THE BOX GRID --> " + matchCount);
             System.out.println();
             System.out.println("The game has been SUCCESSFULLY completed!");
@@ -477,9 +478,9 @@ public class BoxPuzzle {
             try {
                 String[] parts = input.split("-");
                 if (parts.length != 2) return null;
-                
+
                 int row, col;
-                
+
                 // Format: R1-C5 or r1-c5 (case-insensitive due to toUpperCase above)
                 if (parts[0].startsWith("R") && parts[1].startsWith("C")) {
                     row = Integer.parseInt(parts[0].substring(1)) - 1;
@@ -490,12 +491,12 @@ public class BoxPuzzle {
                     row = Integer.parseInt(parts[0]) - 1;
                     col = Integer.parseInt(parts[1]) - 1;
                 }
-                
+
                 // Validate bounds (must be within 0 to GRID_SIZE-1)
                 if (row < 0 || row >= BoxGrid.GRID_SIZE || col < 0 || col >= BoxGrid.GRID_SIZE) {
                     return null;
                 }
-                
+
                 return new int[]{row, col};
             } catch (NumberFormatException e) {
                 // Invalid number in input

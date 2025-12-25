@@ -7,19 +7,19 @@ import game.util.RandUtil;
 /**
  * Abstract base class representing a box in the puzzle game.
  * Each box has 6 surfaces with letters (A-H), can contain a tool, and tracks open/empty state.
- * 
+ * <p>
  * Box surfaces are indexed as follows:
- *   0 = Top, 1 = Bottom, 2 = Front, 3 = Back, 4 = Left, 5 = Right
- * 
+ * 0 = Top, 1 = Bottom, 2 = Front, 3 = Back, 4 = Left, 5 = Right
+ * <p>
  * Subclasses (RegularBox, UnchangingBox, FixedBox) define specific behaviors for:
- *   - Rolling (rotating the box in a direction)
- *   - Stamping (changing the top side letter)
- *   - Fixing (converting to immovable state)
+ * - Rolling (rotating the box in a direction)
+ * - Stamping (changing the top side letter)
+ * - Fixing (converting to immovable state)
  */
 public abstract class Box {
     // Number of faces on a cube
     public static final int NUM_FACES = 6;
-    
+
     // Surface index constants for clarity and maintainability
     protected static final int TOP = 0;
     protected static final int BOTTOM = 1;
@@ -27,17 +27,17 @@ public abstract class Box {
     protected static final int BACK = 3;
     protected static final int LEFT = 4;
     protected static final int RIGHT = 5;
-    
+
     // Array storing the letter on each surface
     // Index mapping: 0=Top, 1=Bottom, 2=Front, 3=Back, 4=Left, 5=Right
     private char[] surfaces;
-    
+
     // The special tool contained in this box (null if empty)
     private SpecialTool tool;
-    
+
     // Whether the box has been opened by a player
     private boolean isOpen;
-    
+
     // Whether the box is empty (no tool inside)
     private boolean isEmpty;
 
@@ -55,7 +55,7 @@ public abstract class Box {
     /**
      * Gets all 6 surface letters of the box.
      * Returns a copy to prevent external modification.
-     * 
+     *
      * @return array of 6 characters for box surfaces
      */
     public char[] getAllSurfaces() {
@@ -65,7 +65,7 @@ public abstract class Box {
     /**
      * Sets all 6 surface letters of the box.
      * Used by BoxFixer to preserve surfaces when converting to FixedBox.
-     * 
+     *
      * @param newSurfaces array of exactly 6 characters
      * @throws IllegalArgumentException if array is null or wrong size
      */
@@ -78,6 +78,7 @@ public abstract class Box {
 
     /**
      * Gets the tool contained in this box.
+     *
      * @return the tool, or null if empty
      */
     public SpecialTool getTool() {
@@ -87,7 +88,7 @@ public abstract class Box {
     /**
      * Sets the tool in this box.
      * Setting to null marks the box as empty.
-     * 
+     *
      * @param tool the tool to set, or null to empty the box
      */
     public void setTool(SpecialTool tool) {
@@ -97,6 +98,7 @@ public abstract class Box {
 
     /**
      * Checks if the box is empty (contains no tool).
+     *
      * @return true if empty
      */
     public boolean isEmpty() {
@@ -105,6 +107,7 @@ public abstract class Box {
 
     /**
      * Sets the empty status of the box.
+     *
      * @param empty true if the box should be marked empty
      */
     public void setEmpty(boolean empty) {
@@ -113,6 +116,7 @@ public abstract class Box {
 
     /**
      * Checks if the box has been opened by a player.
+     *
      * @return true if opened
      */
     public boolean isOpen() {
@@ -121,6 +125,7 @@ public abstract class Box {
 
     /**
      * Sets the open status of the box.
+     *
      * @param open true if the box has been opened
      */
     public void setOpen(boolean open) {
@@ -130,7 +135,7 @@ public abstract class Box {
     /**
      * Gets the letter on the top side of the box.
      * This is the primary letter players try to match to the target.
-     * 
+     *
      * @return the top surface letter (A-H)
      */
     public char getTopSide() {
@@ -141,7 +146,7 @@ public abstract class Box {
      * Sets the letter on the top side of the box.
      * Used by stamp tools to change the top surface.
      * Note: UnchangingBox and FixedBox override this to prevent changes.
-     * 
+     *
      * @param letter the new top surface letter
      */
     public void setTopSide(char letter) {
@@ -161,7 +166,7 @@ public abstract class Box {
     /**
      * Returns the type indicator character for grid display.
      * Must be implemented by subclasses.
-     * 
+     *
      * @return 'R' for RegularBox, 'U' for UnchangingBox, 'X' for FixedBox
      */
     public abstract char getTypeChar();
@@ -169,7 +174,7 @@ public abstract class Box {
     /**
      * Checks if this box can be rolled.
      * Must be implemented by subclasses.
-     * 
+     *
      * @return true if the box can be rolled
      */
     public abstract boolean canRoll();
@@ -177,7 +182,7 @@ public abstract class Box {
     /**
      * Rotates 4 surfaces in a cycle: a -> b -> c -> d -> a
      * Helper method for the roll operation.
-     * 
+     *
      * @param a first surface index
      * @param b second surface index
      * @param c third surface index
@@ -194,13 +199,13 @@ public abstract class Box {
     /**
      * Rolls the box in the specified direction using the Direction enum.
      * Rolling rotates 4 surfaces cyclically while 2 remain unchanged.
-     * 
+     * <p>
      * Direction effects:
-     *   - RIGHT: Top -> Left -> Bottom -> Right -> Top
-     *   - LEFT: Top -> Right -> Bottom -> Left -> Top
-     *   - UP: Top -> Front -> Bottom -> Back -> Top
-     *   - DOWN: Top -> Back -> Bottom -> Front -> Top
-     * 
+     * - RIGHT: Top -> Left -> Bottom -> Right -> Top
+     * - LEFT: Top -> Right -> Bottom -> Left -> Top
+     * - UP: Top -> Front -> Bottom -> Back -> Top
+     * - DOWN: Top -> Back -> Bottom -> Front -> Top
+     *
      * @param direction the Direction enum value
      * @throws IllegalArgumentException if direction is null
      */

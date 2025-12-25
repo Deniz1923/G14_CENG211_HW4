@@ -4,21 +4,21 @@ import game.util.RandUtil;
 
 /**
  * A box whose top side letter cannot be changed by stamp tools.
- * 
+ * <p>
  * Probabilities:
- *   - Generation chance: 10%
- *   - Tool chance: 100% guaranteed (20% for each of 5 tool types)
- * 
+ * - Generation chance: 10%
+ * - Tool chance: 100% guaranteed (20% for each of 5 tool types)
+ * <p>
  * Behavior:
- *   - CAN be rolled (surfaces rotate normally)
- *   - CAN be flipped (top and bottom swap)
- *   - CANNOT have top side changed by stamp tools (setTopSide has no effect)
- *   - CANNOT have surfaces changed by setSurfaces
- * 
+ * - CAN be rolled (surfaces rotate normally)
+ * - CAN be flipped (top and bottom swap)
+ * - CANNOT have top side changed by stamp tools (setTopSide has no effect)
+ * - CANNOT have surfaces changed by setSurfaces
+ * <p>
  * This box type guarantees a tool for the player but resists surface stamping.
  */
 public class UnchangingBox extends Box {
-    
+
     /**
      * Constructs a new UnchangingBox with random surfaces.
      * Always contains a tool (100% chance, 20% for each type).
@@ -31,6 +31,7 @@ public class UnchangingBox extends Box {
 
     /**
      * Returns the type character for grid display.
+     *
      * @return 'U' for UnchangingBox
      */
     @Override
@@ -41,6 +42,7 @@ public class UnchangingBox extends Box {
     /**
      * Checks if this box can be rolled.
      * UnchangingBox can be rolled (surfaces rotate normally).
+     *
      * @return true
      */
     @Override
@@ -51,7 +53,7 @@ public class UnchangingBox extends Box {
     /**
      * Overrides setSurfaces to prevent surface changes.
      * UnchangingBox surfaces cannot be modified after creation.
-     * 
+     *
      * @param newSurfaces ignored - surfaces remain unchanged
      */
     @Override
@@ -62,7 +64,7 @@ public class UnchangingBox extends Box {
     /**
      * Overrides setTopSide to prevent top surface changes.
      * Stamp tools have no effect on UnchangingBox.
-     * 
+     *
      * @param letter ignored - top side remains unchanged
      */
     @Override

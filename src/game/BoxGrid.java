@@ -8,17 +8,17 @@ import game.util.RandUtil;
 
 import java.util.ArrayList;
 
-/**
+/*
  * ANSWER TO COLLECTIONS QUESTION:
  * We chose ArrayList<ArrayList<Box>> for the following reasons:
  * 1. Random Access: ArrayList provides O(1) access by index, which is essential for
- *    accessing boxes at specific grid positions (row, column) during gameplay.
+ * accessing boxes at specific grid positions (row, column) during gameplay.
  * 2. Dynamic Sizing: While the grid is fixed at 8x8, ArrayList handles initialization
- *    cleanly without needing to specify size at compile time.
+ * cleanly without needing to specify size at compile time.
  * 3. Flexibility: ArrayList allows easy iteration and modification of elements,
- *    which is useful for rolling operations and tool applications.
+ * which is useful for rolling operations and tool applications.
  * 4. Memory Efficiency: For a fixed-size grid, ArrayList has minimal overhead and
- *    good cache locality for row-wise access patterns.
+ * good cache locality for row-wise access patterns.
  * Alternative considered: LinkedList would have O(n) access time which is suboptimal
  * for frequent grid access operations in this game.
  */
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class BoxGrid {
     // Grid dimensions - fixed 8x8 as per specification
     public static final int GRID_SIZE = 8;
-    
+
     // The grid is a List of Rows, where each Row is a List of Boxes
     // Using ArrayList for O(1) random access to any box position
     private final ArrayList<ArrayList<Box>> grid;
@@ -157,39 +157,39 @@ public class BoxGrid {
      */
     public void rollFromEdge(int startRow, int startCol, Direction chosenDirection) throws UnmovableFixedBoxException {
         Box startBox = getBox(startRow, startCol);
-        
+
         // Check if starting box is a FixedBox - cannot initiate roll from FixedBox
         if (startBox instanceof FixedBox) {
             throw new UnmovableFixedBoxException(
-                "Box at R" + (startRow + 1) + "-C" + (startCol + 1) + " is a FixedBox and CANNOT BE MOVED!");
+                    "Box at R" + (startRow + 1) + "-C" + (startCol + 1) + " is a FixedBox and CANNOT BE MOVED!");
         }
-        
+
         // Use chosen direction for corners, otherwise calculate from edge position
         Direction direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
         if (direction == null) return;
-        
+
         // Get row/column delta from the Direction enum
         int dRow = direction.getRowDelta();
         int dCol = direction.getColDelta();
-        
+
         // Roll boxes in sequence until hitting a FixedBox or grid boundary
         int currentRow = startRow;
         int currentCol = startCol;
-        
-        while (currentRow >= 0 && currentRow < GRID_SIZE && 
-               currentCol >= 0 && currentCol < GRID_SIZE) {
+
+        while (currentRow >= 0 && currentRow < GRID_SIZE &&
+                currentCol >= 0 && currentCol < GRID_SIZE) {
             Box currentBox = getBox(currentRow, currentCol);
-            
+
             // FixedBox stops the domino effect - it and boxes behind it don't roll
             if (currentBox instanceof FixedBox) {
                 break;
             }
-            
+
             // Roll the box if it can be rolled (RegularBox and UnchangingBox can)
             if (currentBox.canRoll()) {
                 currentBox.roll(direction);
             }
-            
+
             // Move to the next box in the direction
             currentRow += dRow;
             currentCol += dCol;
@@ -217,7 +217,7 @@ public class BoxGrid {
 
     /**
      * Generates a string showing all 6 sides of a box in a cross-shaped net.
-     * 
+     * <p>
      * Layout (as per specification):
      *     -----
      *     | C |    (Back)
@@ -237,18 +237,16 @@ public class BoxGrid {
         Box box = getBox(row, col);
         char[] surfaces = box.getAllSurfaces();
         // Index Mapping: 0=Top, 1=Bottom, 2=Front, 3=Back, 4=Left, 5=Right
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("    -----\n");
-        sb.append(String.format("    | %c |\n", surfaces[3])); // Back
-        sb.append("-------------\n");
-        sb.append(String.format("| %c | %c | %c |\n", surfaces[4], surfaces[0], surfaces[5])); // Left, Top, Right
-        sb.append("-------------\n");
-        sb.append(String.format("    | %c |\n", surfaces[2])); // Front
-        sb.append("    -----\n");
-        sb.append(String.format("    | %c |\n", surfaces[1])); // Bottom
-        sb.append("    -----");
-        return sb.toString();
+
+        return "    -----\n" +
+                String.format("    | %c |\n", surfaces[3]) + // Back
+                "-------------\n" +
+                String.format("| %c | %c | %c |\n", surfaces[4], surfaces[0], surfaces[5]) + // Left, Top, Right
+                "-------------\n" +
+                String.format("    | %c |\n", surfaces[2]) + // Front
+                "    -----\n" +
+                String.format("    | %c |\n", surfaces[1]) + // Bottom
+                "    -----";
     }
 
     /**
@@ -263,14 +261,14 @@ public class BoxGrid {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         // Header row with column numbers (C1 through C8)
         sb.append("        ");
         for (int col = 0; col < GRID_SIZE; col++) {
             sb.append(String.format("C%d      ", col + 1));
         }
         sb.append("\n");
-        
+
         // Grid rows (R1 through R8)
         for (int row = 0; row < GRID_SIZE; row++) {
             sb.append(String.format("R%d  ", row + 1));
@@ -284,7 +282,7 @@ public class BoxGrid {
             }
             sb.append("\n");
         }
-        
+
         return sb.toString();
     }
 }

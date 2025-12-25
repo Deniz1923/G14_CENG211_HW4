@@ -4,16 +4,16 @@ import game.util.RandUtil;
 
 /**
  * A standard box that can be rolled, flipped, and re-stamped.
- * 
+ * <p>
  * Probabilities:
- *   - Generation chance: 85% (most common box type)
- *   - Tool chance: 75% (15% for each of 5 tool types, 25% empty)
- * 
+ * - Generation chance: 85% (most common box type)
+ * - Tool chance: 75% (15% for each of 5 tool types, 25% empty)
+ * <p>
  * This is the most versatile box type - it can be freely manipulated by
  * all game mechanics and tools.
  */
 public class RegularBox extends Box {
-    
+
     /**
      * Constructs a new RegularBox with random surfaces and a possible tool.
      * 75% chance to contain a tool, 25% chance to be empty.
@@ -33,6 +33,7 @@ public class RegularBox extends Box {
 
     /**
      * Returns the type character for grid display.
+     *
      * @return 'R' for RegularBox
      */
     @Override
@@ -43,6 +44,7 @@ public class RegularBox extends Box {
     /**
      * Checks if this box can be rolled.
      * RegularBox can always be rolled.
+     *
      * @return true
      */
     @Override

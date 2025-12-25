@@ -1,6 +1,9 @@
 package game.util;
 
-import game.boxes.*;
+import game.boxes.Box;
+import game.boxes.FixedBox;
+import game.boxes.RegularBox;
+import game.boxes.UnchangingBox;
 import game.tools.*;
 
 import java.util.*;
@@ -8,31 +11,31 @@ import java.util.*;
 /**
  * Utility class for random generation in the game.
  * Provides methods for generating box surfaces, tools, boxes, and random selections.
- * 
+ * <p>
  * Uses a singleton Random instance for all random operations.
  */
 public class RandUtil {
     // Single Random instance used for all random generation
     private static final Random random = new Random();
-    
+
     // Pool of letters for box surfaces
     // Each letter A-H appears exactly twice (allows max 2 of same letter per box)
     private static final List<Character> BASE_POOL = Arrays.asList(
             'A', 'A', 'B', 'B', 'C', 'C', 'D', 'D',
             'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H');
-    
+
     // All possible target letters (A through H)
     private static final char[] LETTERS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
 
     /**
      * Generates 6 random surface letters for a box.
      * Each letter (A-H) can appear at most twice on a box.
-     * 
+     * <p>
      * Algorithm:
-     *   1. Creates a copy of the BASE_POOL (16 letters: 2 each of A-H)
-     *   2. Shuffles the pool randomly
-     *   3. Takes the first 6 letters as box surfaces
-     * 
+     * 1. Creates a copy of the BASE_POOL (16 letters: 2 each of A-H)
+     * 2. Shuffles the pool randomly
+     * 3. Takes the first 6 letters as box surfaces
+     *
      * @return array of 6 characters for box surfaces
      */
     public static char[] generateBoxSurfaces() {
@@ -50,7 +53,7 @@ public class RandUtil {
 
     /**
      * Generates a random letter from A to H.
-     * 
+     *
      * @return a random letter
      */
     public static char generateRandomLetter() {
@@ -59,7 +62,7 @@ public class RandUtil {
 
     /**
      * Checks if a random event occurs based on a percentage chance.
-     * 
+     *
      * @param percentage the chance (0-100) for the event to occur
      * @return true if the event occurs, false otherwise
      */
@@ -70,29 +73,29 @@ public class RandUtil {
     /**
      * Generates a random SpecialTool (equal probability for each type).
      * 20% chance for each: BoxFixer, BoxFlipper, MassRowStamp, MassColumnStamp, PlusShapeStamp
-     * 
+     *
      * @return a randomly selected SpecialTool instance
      */
     public static SpecialTool generateRandomTool() {
         int choice = random.nextInt(5);  // 0-4, each with 20% chance
-        switch (choice) {
-            case 0: return new BoxFixer();
-            case 1: return new BoxFlipper();
-            case 2: return new MassRowStamp();
-            case 3: return new MassColumnStamp();
-            case 4: return new PlusShapeStamp();
-            default: return new BoxFixer(); // Fallback (should never reach)
-        }
+        return switch (choice) {
+            case 0 -> new BoxFixer();
+            case 1 -> new BoxFlipper();
+            case 2 -> new MassRowStamp();
+            case 3 -> new MassColumnStamp();
+            case 4 -> new PlusShapeStamp();
+            default -> new BoxFixer(); // Fallback (should never reach)
+        };
     }
 
     /**
      * Generates a random Box based on type probabilities.
-     * 
+     * <p>
      * Probabilities:
-     *   - 85% RegularBox (most common, can be fully manipulated)
-     *   - 10% UnchangingBox (immune to stamping, guaranteed tool)
-     *   - 5% FixedBox (immovable, always empty)
-     * 
+     * - 85% RegularBox (most common, can be fully manipulated)
+     * - 10% UnchangingBox (immune to stamping, guaranteed tool)
+     * - 5% FixedBox (immovable, always empty)
+     *
      * @return a randomly typed Box instance
      */
     public static Box generateRandomBox() {
@@ -109,7 +112,7 @@ public class RandUtil {
     /**
      * Generates a random target letter for the game (A-H).
      * Called once at game start to select the letter players try to match.
-     * 
+     *
      * @return a random target letter
      */
     public static char generateTargetLetter() {
