@@ -7,21 +7,52 @@ import game.util.Direction;
 import game.util.RandUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  * ANSWER TO COLLECTIONS QUESTION:
- * We chose ArrayList<ArrayList<Box>> for the following reasons:
- * 1. Random Access: ArrayList provides O(1) access by index, which is essential for
- * accessing boxes at specific grid positions (row, column) during gameplay.
- * 2. Dynamic Sizing: While the grid is fixed at 8x8, ArrayList handles initialization
- * cleanly without needing to specify size at compile time.
- * 3. Flexibility: ArrayList allows easy iteration and modification of elements,
- * which is useful for rolling operations and tool applications.
- * 4. Memory Efficiency: For a fixed-size grid, ArrayList has minimal overhead and
- * good cache locality for row-wise access patterns.
- * Alternative considered: LinkedList would have O(n) access time which is suboptimal
- * for frequent grid access operations in this game.
+ *
+ * Data Structure Choice: List<List<Box>> (interface) backed by ArrayList (implementation)
+ *
+ * WHY LIST INTERFACE (NOT ARRAYLIST DIRECTLY)?
+ * Declaring the field as List<List<Box>> instead of ArrayList<ArrayList<Box>> follows
+ * the Dependency Inversion Principle - we depend on an abstraction (List) rather than
+ * a concrete implementation. This decouples our code from ArrayList-specific behavior,
+ * allowing future flexibility without breaking existing functionality.
+ *
+ * WHY ARRAYLIST AS THE BACKING IMPLEMENTATION?
+ *
+ * Performance Analysis for Grid Operations:
+ * +-----------------------+------------+------------+
+ * | Operation             | ArrayList  | LinkedList |
+ * +-----------------------+------------+------------+
+ * | getBox(row, col)      | O(1)       | O(n)       |
+ * | setBox(row, col, box) | O(1)       | O(n)       |
+ * | Iteration (toString)  | O(n)       | O(n)       |
+ * | Memory overhead       | Low        | High       |
+ * +-----------------------+------------+------------+
+ *
+ * Our game performs frequent random access operations (getBox, setBox) during:
+ * - Rolling mechanics (accessing boxes along a row/column)
+ * - Tool applications (MassRowStamp, MassColumnStamp, PlusShapeStamp)
+ * - Grid display (toString iterates all 64 boxes)
+ * - Box net viewing (accessing specific box surfaces)
+ *
+ * ArrayList's contiguous memory layout provides O(1) index-based access and better
+ * CPU cache utilization compared to LinkedList's node-based structure.
+ *
+ * WHY NOT A 2D ARRAY (Box[][])?
+ * While arrays offer O(1) access and minimal overhead, List provides:
+ * - Type-safe generics (Box[][] requires casting)
+ * - Built-in bounds checking with meaningful exceptions
+ * - Compatibility with Java Streams and Collections utilities
+ * - Cleaner nested iteration syntax with enhanced for-loops
+ *
+ * CONCLUSION:
+ * List<List<Box>> with ArrayList implementation optimally balances OOP design
+ * principles (interface-based programming) with runtime efficiency (O(1) access).
  */
+
 
 /**
  * Represents the 8x8 grid of boxes in the puzzle game.
@@ -33,8 +64,8 @@ public class BoxGrid {
     public static final int GRID_SIZE = 8;
 
     // The grid is a List of Rows, where each Row is a List of Boxes
-    // Using ArrayList for O(1) random access to any box position
-    private final ArrayList<ArrayList<Box>> grid;
+    // Using List interface for flexibility, backed by ArrayList for O(1) random access
+    private final List<List<Box>> grid;
 
     /**
      * Constructs a new 8x8 BoxGrid with randomly generated boxes.
@@ -53,7 +84,7 @@ public class BoxGrid {
      */
     private void initializeGrid() {
         for (int row = 0; row < GRID_SIZE; row++) {
-            ArrayList<Box> rowList = new ArrayList<>();
+            List<Box> rowList = new ArrayList<>();
             for (int col = 0; col < GRID_SIZE; col++) {
                 rowList.add(RandUtil.generateRandomBox());
             }
