@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 import game.boxes.Box;
 import game.boxes.FixedBox;
@@ -117,14 +117,14 @@ public class BoxGrid {
      * @return array of two valid Direction values, or null if not a corner
      */
     public Direction[] getCornerDirections(int row, int col) {
-        // Top-left corner: can go down or right
-        if (row == 0 && col == 0) return new Direction[]{Direction.DOWN, Direction.RIGHT};
-        // Top-right corner: can go down or left
-        if (row == 0 && col == GRID_SIZE - 1) return new Direction[]{Direction.DOWN, Direction.LEFT};
-        // Bottom-left corner: can go up or right
-        if (row == GRID_SIZE - 1 && col == 0) return new Direction[]{Direction.UP, Direction.RIGHT};
-        // Bottom-right corner: can go up or left
-        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new Direction[]{Direction.UP, Direction.LEFT};
+        // Top-left corner: can go right or down
+        if (row == 0 && col == 0) return new Direction[]{Direction.RIGHT, Direction.DOWN};
+        // Top-right corner: can go left or down
+        if (row == 0 && col == GRID_SIZE - 1) return new Direction[]{Direction.LEFT, Direction.DOWN};
+        // Bottom-left corner: can go right or up
+        if (row == GRID_SIZE - 1 && col == 0) return new Direction[]{Direction.RIGHT, Direction.UP};
+        // Bottom-right corner: can go left or up
+        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new Direction[]{Direction.LEFT, Direction.UP};
         return null;
     }
 
@@ -153,9 +153,10 @@ public class BoxGrid {
      * @param startRow the starting row of the edge box
      * @param startCol the starting column of the edge box
      * @param chosenDirection the Direction to roll (required for corners, null for non-corners)
+     * @return true if a FixedBox was encountered during rolling
      * @throws UnmovableFixedBoxException if the starting edge box is a FixedBox
      */
-    public void rollFromEdge(int startRow, int startCol, Direction chosenDirection) throws UnmovableFixedBoxException {
+    public boolean rollFromEdge(int startRow, int startCol, Direction chosenDirection) throws UnmovableFixedBoxException {
         Box startBox = getBox(startRow, startCol);
 
         // Check if starting box is a FixedBox - cannot initiate roll from FixedBox
@@ -166,7 +167,7 @@ public class BoxGrid {
 
         // Use chosen direction for corners, otherwise calculate from edge position
         Direction direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
-        if (direction == null) return;
+        if (direction == null) return false;
 
         // Get row/column delta from the Direction enum
         int dRow = direction.getRowDelta();
@@ -175,6 +176,7 @@ public class BoxGrid {
         // Roll boxes in sequence until hitting a FixedBox or grid boundary
         int currentRow = startRow;
         int currentCol = startCol;
+        boolean hitFixedBox = false;
 
         while (currentRow >= 0 && currentRow < GRID_SIZE &&
                 currentCol >= 0 && currentCol < GRID_SIZE) {
@@ -182,6 +184,7 @@ public class BoxGrid {
 
             // FixedBox stops the domino effect - it and boxes behind it don't roll
             if (currentBox instanceof FixedBox) {
+                hitFixedBox = true;
                 break;
             }
 
@@ -194,6 +197,8 @@ public class BoxGrid {
             currentRow += dRow;
             currentCol += dCol;
         }
+        
+        return hitFixedBox;
     }
 
     /**

@@ -1,4 +1,4 @@
-import game.BoxPuzzle;
+import game.core.BoxPuzzle;
 
 /**
  * BoxPuzzleApp - Main entry point for the Box Top Side Matching Puzzle Game.
