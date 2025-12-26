@@ -6,11 +6,13 @@ import game.boxes.RegularBox;
 import game.boxes.UnchangingBox;
 import game.tools.*;
 
+// Idea makes it wildcard automatically
 import java.util.*;
 
 /**
  * Utility class for random generation in the game.
- * Provides methods for generating box surfaces, tools, boxes, and random selections.
+ * Provides methods for generating box surfaces, tools, boxes, and random
+ * selections.
  * <p>
  * Uses a singleton Random instance for all random operations.
  */
@@ -25,7 +27,7 @@ public class RandUtil {
             'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H');
 
     // All possible target letters (A through H)
-    private static final char[] LETTERS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+    private static final char[] LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
     /**
      * Generates 6 random surface letters for a box.
@@ -72,12 +74,13 @@ public class RandUtil {
 
     /**
      * Generates a random SpecialTool (equal probability for each type).
-     * 20% chance for each: BoxFixer, BoxFlipper, MassRowStamp, MassColumnStamp, PlusShapeStamp
+     * 20% chance for each: BoxFixer, BoxFlipper, MassRowStamp, MassColumnStamp,
+     * PlusShapeStamp
      *
      * @return a randomly selected SpecialTool instance
      */
     public static SpecialTool generateRandomTool() {
-        int choice = random.nextInt(5);  // 0-4, each with 20% chance
+        int choice = random.nextInt(5); // 0-4, each with 20% chance
         return switch (choice) {
             case 0 -> new BoxFixer();
             case 1 -> new BoxFlipper();
@@ -99,13 +102,13 @@ public class RandUtil {
      * @return a randomly typed Box instance
      */
     public static Box generateRandomBox() {
-        int roll = random.nextInt(100);  // 0-99
+        int roll = random.nextInt(100); // 0-99
         if (roll < 85) {
-            return new RegularBox();     // 0-84: 85% chance
+            return new RegularBox(); // 0-84: 85% chance
         } else if (roll < 95) {
-            return new UnchangingBox();  // 85-94: 10% chance
+            return new UnchangingBox(); // 85-94: 10% chance
         } else {
-            return new FixedBox();       // 95-99: 5% chance
+            return new FixedBox(); // 95-99: 5% chance
         }
     }
 

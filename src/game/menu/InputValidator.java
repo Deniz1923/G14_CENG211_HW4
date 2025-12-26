@@ -5,7 +5,8 @@ import game.exceptions.InvalidPositionException;
 import game.util.Direction;
 
 /**
- * Implementation of IValidator for validating user input in the Box Puzzle game.
+ * Implementation of IValidator for validating user input in the Box Puzzle
+ * game.
  * Handles all parsing and rule-based validation logic.
  * Separates validation concerns from input reading (Scanner) operations.
  */
@@ -19,15 +20,9 @@ public class InputValidator implements IValidator {
      * Supports case-insensitive input as required by specification.
      *
      * @param input the position string (will be converted to uppercase)
-     * @return [row, col] as 0-based indices, or null if invalid format
-     */
-    /**
-     * Parses a position string in format "R#-C#" or "#-#" to [row, col] array.
-     * Supports case-insensitive input as required by specification.
-     *
-     * @param input the position string (will be converted to uppercase)
      * @return [row, col] as 0-based indices
-     * @throws InvalidPositionException if the format is invalid or position is out of bounds
+     * @throws InvalidPositionException if the format is invalid or position is out
+     *                                  of bounds
      */
     @Override
     public int[] parsePosition(String input) throws InvalidPositionException {
@@ -56,7 +51,7 @@ public class InputValidator implements IValidator {
                 throw new InvalidPositionException(row + 1, col + 1);
             }
 
-            return new int[]{row, col};
+            return new int[] { row, col };
         } catch (NumberFormatException e) {
             // Invalid number in input - throw custom exception
             throw new InvalidPositionException(input);
@@ -97,7 +92,8 @@ public class InputValidator implements IValidator {
      */
     @Override
     public boolean isValidDirection(Direction selected, Direction[] validDirections) {
-        if (selected == null || validDirections == null) return false;
+        if (selected == null || validDirections == null)
+            return false;
         return selected == validDirections[0] || selected == validDirections[1];
     }
 
