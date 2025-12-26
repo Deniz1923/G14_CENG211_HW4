@@ -51,4 +51,15 @@ public class RegularBox extends Box {
     public boolean canRoll() {
         return true;
     }
+
+    /**
+     * Checks if this box can be stamped.
+     * RegularBox can be stamped with new letters.
+     *
+     * @return true
+     */
+    @Override
+    public boolean canBeStamped() {
+        return true;
+    }
 }

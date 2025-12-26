@@ -26,8 +26,8 @@ public class FixedBox extends Box {
      */
     public FixedBox() {
         super();
-        this.setTool(null);   // No tool
-        this.setEmpty(true);  // Always empty
+        this.setTool(null); // No tool
+        this.setEmpty(true); // Always empty
     }
 
     /**
@@ -86,5 +86,27 @@ public class FixedBox extends Box {
     @Override
     public void setTopSide(char letter) {
         // Intentionally empty - FixedBox top side cannot be changed
+    }
+
+    /**
+     * Overrides stampTopSide to prevent stamping.
+     * FixedBox ignores stamp operations.
+     *
+     * @param letter ignored - top side remains unchanged
+     */
+    @Override
+    public void stampTopSide(char letter) {
+        // Intentionally empty - FixedBox cannot be stamped
+    }
+
+    /**
+     * Checks if this box can be stamped.
+     * FixedBox cannot be stamped with new letters.
+     *
+     * @return false
+     */
+    @Override
+    public boolean canBeStamped() {
+        return false;
     }
 }

@@ -71,4 +71,26 @@ public class UnchangingBox extends Box {
     public void setTopSide(char letter) {
         // Intentionally empty - top side cannot be changed by stamps
     }
+
+    /**
+     * Overrides stampTopSide to prevent stamping.
+     * UnchangingBox ignores stamp operations.
+     *
+     * @param letter ignored - top side remains unchanged
+     */
+    @Override
+    public void stampTopSide(char letter) {
+        // Intentionally empty - UnchangingBox cannot be stamped
+    }
+
+    /**
+     * Checks if this box can be stamped.
+     * UnchangingBox cannot be stamped with new letters.
+     *
+     * @return false
+     */
+    @Override
+    public boolean canBeStamped() {
+        return false;
+    }
 }

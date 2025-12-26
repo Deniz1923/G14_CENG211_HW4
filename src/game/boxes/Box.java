@@ -1,11 +1,16 @@
 package game.boxes;
 
+import game.exceptions.EmptyBoxException;
+import game.interfaces.Openable;
+import game.interfaces.Rollable;
+import game.interfaces.Stampable;
 import game.tools.SpecialTool;
 import game.util.Direction;
 import game.util.RandUtil;
 
 /**
  * Abstract base class representing a box in the puzzle game.
+ * Implements Rollable, Stampable, and Openable interfaces.
  * Each box has 6 surfaces with letters (A-H), can contain a tool, and tracks
  * open/empty state.
  * <p>
@@ -18,7 +23,7 @@ import game.util.RandUtil;
  * - Stamping (changing the top side letter)
  * - Fixing (converting to immovable state)
  */
-public abstract class Box {
+public abstract class Box implements Rollable, Stampable, Openable {
     // Number of faces on a cube
     public static final int NUM_FACES = 6;
 
@@ -126,12 +131,42 @@ public abstract class Box {
     }
 
     /**
+     * Checks if the box has already been opened (Openable interface method).
+     *
+     * @return true if already opened, false otherwise
+     */
+    @Override
+    public boolean hasBeenOpened() {
+        return isOpen;
+    }
+
+    /**
      * Sets the open status of the box.
      *
      * @param open true if the box has been opened
      */
     public void setOpen(boolean open) {
         this.isOpen = open;
+    }
+
+    /**
+     * Opens the box and returns the tool inside (Openable interface method).
+     * Marks the box as opened and clears the contained tool.
+     *
+     * @return The SpecialTool inside the box
+     * @throws EmptyBoxException if the box is empty
+     */
+    @Override
+    public SpecialTool open() throws EmptyBoxException {
+        if (tool == null) {
+            isOpen = true;
+            throw new EmptyBoxException("Box is empty!");
+        }
+
+        SpecialTool acquiredTool = tool;
+        tool = null;
+        isOpen = true;
+        return acquiredTool;
     }
 
     /**
@@ -154,6 +189,26 @@ public abstract class Box {
     public void setTopSide(char letter) {
         this.surfaces[0] = letter;
     }
+
+    /**
+     * Stamps the top side with a new letter (Stampable interface method).
+     * Can be overridden by subclasses (UnchangingBox does nothing).
+     *
+     * @param letter The new letter for the top side
+     */
+    @Override
+    public void stampTopSide(char letter) {
+        setTopSide(letter);
+    }
+
+    /**
+     * Checks if the box can be stamped (Stampable interface method).
+     * Must be implemented by subclasses.
+     *
+     * @return true if the box can be stamped, false otherwise
+     */
+    @Override
+    public abstract boolean canBeStamped();
 
     /**
      * Flips the box upside down, swapping top and bottom surfaces.
@@ -194,6 +249,7 @@ public abstract class Box {
      * @param direction the Direction enum value
      * @throws IllegalArgumentException if direction is null
      */
+    @Override
     public void roll(Direction direction) {
         if (direction == null) {
             throw new IllegalArgumentException("Direction cannot be null.");

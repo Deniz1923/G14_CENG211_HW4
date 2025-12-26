@@ -1,15 +1,14 @@
 package game.tools;
 
 import game.boxes.Box;
-import game.boxes.FixedBox;
-import game.boxes.UnchangingBox;
 import game.core.BoxGrid;
 
 /**
  * A tool that re-stamps the top side of 5 boxes in a plus (+) shape pattern.
  * <p>
  * Effect:
- * - Stamps the selected box and its 4 adjacent neighbors (up, down, left, right)
+ * - Stamps the selected box and its 4 adjacent neighbors (up, down, left,
+ * right)
  * - Each affected box has its top side set to the target letter
  * - Only affects RegularBox (which can be stamped)
  * - Does NOT affect UnchangingBox or FixedBox
@@ -43,7 +42,7 @@ public class PlusShapeStamp extends SpecialTool {
     @Override
     public void apply(BoxGrid grid, char targetLetter, int row, int col) {
         // Offsets for plus shape: center, up, down, left, right
-        int[][] offsets = {{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int[][] offsets = { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
 
         for (int[] offset : offsets) {
             int targetRow = row + offset[0];
@@ -55,9 +54,9 @@ public class PlusShapeStamp extends SpecialTool {
 
                 Box box = grid.getBox(targetRow, targetCol);
 
-                // Skip UnchangingBox and FixedBox - their surfaces can't be changed
-                if (!(box instanceof UnchangingBox) && !(box instanceof FixedBox)) {
-                    box.setTopSide(targetLetter);
+                // Only stamp boxes that can be stamped (not UnchangingBox or FixedBox)
+                if (box.canBeStamped()) {
+                    box.stampTopSide(targetLetter);
                 }
             }
         }

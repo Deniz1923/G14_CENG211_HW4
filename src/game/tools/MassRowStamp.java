@@ -1,15 +1,14 @@
 package game.tools;
 
 import game.boxes.Box;
-import game.boxes.FixedBox;
-import game.boxes.UnchangingBox;
 import game.core.BoxGrid;
 
 /**
  * A tool that re-stamps the top side of all boxes in a specific row.
  * <p>
  * Effect:
- * - All 8 boxes in the selected row have their top side set to the target letter
+ * - All 8 boxes in the selected row have their top side set to the target
+ * letter
  * - Only affects RegularBox (which can be stamped)
  * - Does NOT affect UnchangingBox or FixedBox (their tops remain unchanged)
  * <p>
@@ -39,9 +38,9 @@ public class MassRowStamp extends SpecialTool {
         for (int c = 0; c < BoxGrid.GRID_SIZE; c++) {
             Box box = grid.getBox(row, c);
 
-            // Skip UnchangingBox and FixedBox - their surfaces can't be changed
-            if (!(box instanceof UnchangingBox) && !(box instanceof FixedBox)) {
-                box.setTopSide(targetLetter);
+            // Only stamp boxes that can be stamped (not UnchangingBox or FixedBox)
+            if (box.canBeStamped()) {
+                box.stampTopSide(targetLetter);
             }
         }
     }

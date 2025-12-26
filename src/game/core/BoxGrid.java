@@ -53,18 +53,20 @@ import java.util.List;
  * principles (interface-based programming) with runtime efficiency (O(1) access).
  */
 
-
 /**
  * Represents the 8x8 grid of boxes in the puzzle game.
- * Handles all grid-related operations including rolling, box access, and display.
- * The grid uses 0-based indexing internally but displays 1-based positions to users.
+ * Handles all grid-related operations including rolling, box access, and
+ * display.
+ * The grid uses 0-based indexing internally but displays 1-based positions to
+ * users.
  */
 public class BoxGrid {
     // Grid dimensions - fixed 8x8 as per specification
     public static final int GRID_SIZE = 8;
 
     // The grid is a List of Rows, where each Row is a List of Boxes
-    // Using List interface for flexibility, backed by ArrayList for O(1) random access
+    // Using List interface for flexibility, backed by ArrayList for O(1) random
+    // access
     private final List<List<Box>> grid;
 
     /**
@@ -149,13 +151,17 @@ public class BoxGrid {
      */
     public Direction[] getCornerDirections(int row, int col) {
         // Top-left corner: can go right or down
-        if (row == 0 && col == 0) return new Direction[]{Direction.RIGHT, Direction.DOWN};
+        if (row == 0 && col == 0)
+            return new Direction[] { Direction.RIGHT, Direction.DOWN };
         // Top-right corner: can go left or down
-        if (row == 0 && col == GRID_SIZE - 1) return new Direction[]{Direction.LEFT, Direction.DOWN};
+        if (row == 0 && col == GRID_SIZE - 1)
+            return new Direction[] { Direction.LEFT, Direction.DOWN };
         // Bottom-left corner: can go right or up
-        if (row == GRID_SIZE - 1 && col == 0) return new Direction[]{Direction.RIGHT, Direction.UP};
+        if (row == GRID_SIZE - 1 && col == 0)
+            return new Direction[] { Direction.RIGHT, Direction.UP };
         // Bottom-right corner: can go left or up
-        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1) return new Direction[]{Direction.LEFT, Direction.UP};
+        if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1)
+            return new Direction[] { Direction.LEFT, Direction.UP };
         return null;
     }
 
@@ -168,10 +174,14 @@ public class BoxGrid {
      * @return the Direction to roll, or null if not an edge
      */
     public Direction getRollDirection(int row, int col) {
-        if (row == 0) return Direction.DOWN;         // Top edge rolls down
-        if (row == GRID_SIZE - 1) return Direction.UP; // Bottom edge rolls up
-        if (col == 0) return Direction.RIGHT;        // Left edge rolls right
-        if (col == GRID_SIZE - 1) return Direction.LEFT; // Right edge rolls left
+        if (row == 0)
+            return Direction.DOWN; // Top edge rolls down
+        if (row == GRID_SIZE - 1)
+            return Direction.UP; // Bottom edge rolls up
+        if (col == 0)
+            return Direction.RIGHT; // Left edge rolls right
+        if (col == GRID_SIZE - 1)
+            return Direction.LEFT; // Right edge rolls left
         return null; // Not an edge
     }
 
@@ -183,11 +193,13 @@ public class BoxGrid {
      *
      * @param startRow        the starting row of the edge box
      * @param startCol        the starting column of the edge box
-     * @param chosenDirection the Direction to roll (required for corners, null for non-corners)
+     * @param chosenDirection the Direction to roll (required for corners, null for
+     *                        non-corners)
      * @return true if a FixedBox was encountered during rolling
      * @throws UnmovableFixedBoxException if the starting edge box is a FixedBox
      */
-    public boolean rollFromEdge(int startRow, int startCol, Direction chosenDirection) throws UnmovableFixedBoxException {
+    public boolean rollFromEdge(int startRow, int startCol, Direction chosenDirection)
+            throws UnmovableFixedBoxException {
         Box startBox = getBox(startRow, startCol);
 
         // Check if starting box is a FixedBox - cannot initiate roll from FixedBox
@@ -198,7 +210,8 @@ public class BoxGrid {
 
         // Use chosen direction for corners, otherwise calculate from edge position
         Direction direction = (chosenDirection != null) ? chosenDirection : getRollDirection(startRow, startCol);
-        if (direction == null) return false;
+        if (direction == null)
+            return false;
 
         // Get row/column delta from the Direction enum
         int dRow = direction.getRowDelta();
@@ -252,17 +265,43 @@ public class BoxGrid {
     }
 
     /**
+     * Checks if at least one edge box is not a FixedBox.
+     * Used to detect if the game should end early due to no possible moves.
+     *
+     * @return true if any movable edge box exists
+     */
+    public boolean hasAnyMovableEdgeBox() {
+        // Check top and bottom rows
+        for (int col = 0; col < GRID_SIZE; col++) {
+            if (!(grid.get(0).get(col) instanceof FixedBox))
+                return true;
+            if (!(grid.get(GRID_SIZE - 1).get(col) instanceof FixedBox))
+                return true;
+        }
+
+        // Check left and right columns (excluding corners already checked)
+        for (int row = 1; row < GRID_SIZE - 1; row++) {
+            if (!(grid.get(row).get(0) instanceof FixedBox))
+                return true;
+            if (!(grid.get(row).get(GRID_SIZE - 1) instanceof FixedBox))
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Generates a string showing all 6 sides of a box in a cross-shaped net.
      * <p>
      * Layout (as per specification):
      * -----
-     * | C |    (Back)
+     * | C | (Back)
      * -------------
-     * | H | B | E |  (Left, Top, Right)
+     * | H | B | E | (Left, Top, Right)
      * -------------
-     * | F |    (Front)
+     * | F | (Front)
      * -----
-     * | A |    (Bottom)
+     * | A | (Bottom)
      * -----
      *
      * @param row the row of the box
@@ -287,7 +326,10 @@ public class BoxGrid {
 
     /**
      * Generates the string representation of the grid for display.
-     * Format: | Type-TopLetter-Status | where:
+     * Format matches G09/PDF specification:
+     * - Column headers: C1 through C8 with proper spacing
+     * - Horizontal dashed separator lines between rows
+     * - Cell format: | Type-TopLetter-Status |
      * - Type: R (Regular), U (Unchanging), X (Fixed)
      * - TopLetter: The letter on the top side (A-H)
      * - Status: M (Mystery/unopened) or O (Opened/Fixed)
@@ -298,25 +340,26 @@ public class BoxGrid {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        // Header row with column numbers (C1 through C8)
-        sb.append("        ");
-        for (int col = 0; col < GRID_SIZE; col++) {
-            sb.append(String.format("C%d      ", col + 1));
-        }
-        sb.append("\n");
+        // Horizontal separator line (65 dashes)
+        String horizontalLine = " -----------------------------------------------------------------";
+
+        // Column headers with proper spacing
+        sb.append("       C1      C2      C3      C4      C5      C6      C7      C8\n");
+        sb.append(horizontalLine).append("\n");
 
         // Grid rows (R1 through R8)
         for (int row = 0; row < GRID_SIZE; row++) {
-            sb.append(String.format("R%d  ", row + 1));
+            sb.append("R").append(row + 1).append(" |");
             for (int col = 0; col < GRID_SIZE; col++) {
                 Box box = getBox(row, col);
-                char type = box.getTypeChar();      // R, U, or X
-                char topSide = box.getTopSide();    // A-H
+                char type = box.getTypeChar(); // R, U, or X
+                char topSide = box.getTopSide(); // A-H
                 // Status: O if opened or FixedBox, M if mystery (unopened)
-                char status = (box.isOpen() || box instanceof FixedBox) ? 'O' : 'M';
-                sb.append(String.format("| %c-%c-%c |", type, topSide, status));
+                char status = (box.hasBeenOpened() || box instanceof FixedBox) ? 'O' : 'M';
+                sb.append(String.format(" %c-%c-%c |", type, topSide, status));
             }
             sb.append("\n");
+            sb.append(horizontalLine).append("\n");
         }
 
         return sb.toString();

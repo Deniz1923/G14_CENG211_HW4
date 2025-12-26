@@ -36,7 +36,8 @@ public class BoxPuzzle {
 
     /**
      * Constructs a new BoxPuzzle game and starts gameplay.
-     * Initializes the grid, selects a random target letter, and begins the game loop.
+     * Initializes the grid, selects a random target letter, and begins the game
+     * loop.
      */
     public BoxPuzzle() {
         this.grid = new BoxGrid();
@@ -59,6 +60,12 @@ public class BoxPuzzle {
 
         // Main game loop - runs for TOTAL_TURNS turns
         while (currentTurn <= TOTAL_TURNS) {
+            // Check if any moves can be made (edge case: all edge boxes are FixedBoxes)
+            if (!grid.hasAnyMovableEdgeBox()) {
+                menu.displayError("No movable edge boxes remain! Game ending early.");
+                break;
+            }
+
             // Display turn header
             menu.displayTurnHeader(currentTurn);
 
@@ -80,7 +87,8 @@ public class BoxPuzzle {
                 edgeRow = edgePosition[0];
                 edgeCol = edgePosition[1];
 
-                // Handle corner case - player must choose direction (corners have 2 valid directions)
+                // Handle corner case - player must choose direction (corners have 2 valid
+                // directions)
                 Direction chosenDirection = null;
                 if (grid.isCorner(edgeRow, edgeCol)) {
                     chosenDirection = menu.selectCornerDirection(edgeRow, edgeCol);
@@ -88,7 +96,8 @@ public class BoxPuzzle {
 
                 // Execute the roll with domino effect
                 boolean hitFixedBox = grid.rollFromEdge(edgeRow, edgeCol, chosenDirection);
-                Direction displayDirection = (chosenDirection != null) ? chosenDirection : grid.getRollDirection(edgeRow, edgeCol);
+                Direction displayDirection = (chosenDirection != null) ? chosenDirection
+                        : grid.getRollDirection(edgeRow, edgeCol);
                 menu.displayRollSuccess(displayDirection, hitFixedBox);
                 menu.displayGrid(grid.toString());
 
@@ -124,7 +133,8 @@ public class BoxPuzzle {
 
             } catch (UnmovableFixedBoxException e) {
                 // Selected edge box was a FixedBox - turn is wasted
-                // Use the already captured edgeRow/edgeCol instead of calling selectEdgeBox again
+                // Use the already captured edgeRow/edgeCol instead of calling selectEdgeBox
+                // again
                 Direction displayDirection = grid.getRollDirection(edgeRow, edgeCol);
                 menu.displayFixedBoxError(displayDirection);
             }
@@ -231,7 +241,8 @@ public class BoxPuzzle {
         public void displayWelcome(char targetLetter) {
             System.out.println();
             System.out.println("Welcome to Box Top Side Matching Puzzle App. An 8x8 box grid is being generated.");
-            System.out.println("Your goal is to maximize the letter \"" + targetLetter + "\" on the top sides of the boxes.");
+            System.out.println(
+                    "Your goal is to maximize the letter \"" + targetLetter + "\" on the top sides of the boxes.");
             System.out.println();
         }
 
@@ -271,12 +282,14 @@ public class BoxPuzzle {
 
         /**
          * Displays a success message after rolling boxes.
-         * Format matches PDF: "The chosen box and any box on its path have been rolled to the [direction]."
+         * Format matches PDF: "The chosen box and any box on its path have been rolled
+         * to the [direction]."
          */
         @Override
         public void displayRollSuccess(Direction direction, boolean hitFixedBox) {
             String directionText;
-            // Per PDF: horizontal directions use "to the right/left", vertical use "upwards/downwards"
+            // Per PDF: horizontal directions use "to the right/left", vertical use
+            // "upwards/downwards"
             switch (direction) {
                 case RIGHT:
                     directionText = "to the right";
@@ -315,7 +328,8 @@ public class BoxPuzzle {
 
         /**
          * Displays the tool acquired from a box.
-         * Format matches PDF: "The box on location R#-C# is opened. It contains a SpecialTool --> [ToolName]"
+         * Format matches PDF: "The box on location R#-C# is opened. It contains a
+         * SpecialTool --> [ToolName]"
          */
         @Override
         public void displayToolAcquired(SpecialTool tool, int row, int col) {
@@ -371,7 +385,8 @@ public class BoxPuzzle {
             System.out.println();
             System.out.println("The final state of the box grid:");
             System.out.println(gridString);
-            System.out.println("The total number of \"" + targetLetter + "\" letters on top sides: " + matchCount + ".");
+            System.out
+                    .println("The total number of \"" + targetLetter + "\" letters on top sides: " + matchCount + ".");
         }
 
         // =====================================================================
@@ -380,13 +395,15 @@ public class BoxPuzzle {
 
         /**
          * Prompts user to select an edge box for rolling.
-         * Format matches PDF: "Please enter the location of the edge box you want to roll: "
+         * Format matches PDF: "Please enter the location of the edge box you want to
+         * roll: "
          *
          * @return [row, col] array of selected edge box (0-based indices)
          */
         public int[] selectEdgeBox() {
             while (true) {
-                System.out.print("Please enter the location of the edge box you want to roll in the format R#-C# or 1-2: ");
+                System.out.print(
+                        "Please enter the location of the edge box you want to roll in the format R#-C# or 1-2: ");
                 String input = scanner.nextLine();
 
                 // Check if user wants to view a box net
@@ -398,7 +415,8 @@ public class BoxPuzzle {
                 // Parse the position input using validator
                 int[] position = validator.parsePosition(input);
                 if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the correct Format: R#-C# or 1-2: ");
+                    System.out.println(
+                            "INCORRECT INPUT: Invalid format! Please reenter the location in the correct Format: R#-C# or 1-2: ");
                     continue;
                 }
 
@@ -407,7 +425,8 @@ public class BoxPuzzle {
 
                 // Validate that the selected position is on the edge using validator
                 if (!validator.isEdgePosition(row, col)) {
-                    System.out.println("INCORRECT INPUT: The chosen box is not on any of the edges. Please reenter the location: ");
+                    System.out.println(
+                            "INCORRECT INPUT: The chosen box is not on any of the edges. Please reenter the location: ");
                     continue;
                 }
 
@@ -473,7 +492,8 @@ public class BoxPuzzle {
 
         /**
          * Asks user if they want to view all surfaces of a box.
-         * Format matches PDF: "Do you want to view all surfaces of a box? [1] Yes or [2] No?"
+         * Format matches PDF: "Do you want to view all surfaces of a box? [1] Yes or
+         * [2] No?"
          *
          * @return true if user wants to view, false otherwise
          */
@@ -494,7 +514,8 @@ public class BoxPuzzle {
             // Parse position using validator
             int[] position = validator.parsePosition(input);
             if (position == null) {
-                System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
+                System.out.println(
+                        "INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
                 return;
             }
 
@@ -526,7 +547,8 @@ public class BoxPuzzle {
                 // Parse the position input using validator
                 int[] position = validator.parsePosition(input);
                 if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
+                    System.out.println(
+                            "INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
                     continue;
                 }
 
@@ -535,7 +557,8 @@ public class BoxPuzzle {
 
                 // Validate selection is in rolled row/column using validator
                 if (!validator.isInRolledPath(direction, edgeRow, edgeCol, row, col)) {
-                    System.out.println("INCORRECT INPUT: The chosen box was not rolled during the first stage. Please reenter the location: ");
+                    System.out.println(
+                            "INCORRECT INPUT: The chosen box was not rolled during the first stage. Please reenter the location: ");
                     continue;
                 }
 
@@ -545,7 +568,8 @@ public class BoxPuzzle {
 
         /**
          * Prompts user to select any box for tool application.
-         * Format matches PDF: "Please enter the location of the box to use this SpecialTool: "
+         * Format matches PDF: "Please enter the location of the box to use this
+         * SpecialTool: "
          *
          * @param tool the tool being applied
          * @return [row, col] of selected box (0-based indices)
