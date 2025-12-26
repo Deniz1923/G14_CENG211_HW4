@@ -386,7 +386,7 @@ public class BoxPuzzle {
          */
         public int[] selectEdgeBox() {
             while (true) {
-                System.out.print("Please enter the location of the edge box you want to roll (Can also accept \"1-2\"): ");
+                System.out.print("Please enter the location of the edge box you want to roll in the format R#-C# or 1-2: ");
                 String input = scanner.nextLine();
 
                 // Check if user wants to view a box net
@@ -398,7 +398,7 @@ public class BoxPuzzle {
                 // Parse the position input using validator
                 int[] position = validator.parsePosition(input);
                 if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format. Please reenter the location: ");
+                    System.out.println("INCORRECT INPUT: Invalid format. Please reenter the location the correct Format: R#-C# or 1-2: ");
                     continue;
                 }
 
