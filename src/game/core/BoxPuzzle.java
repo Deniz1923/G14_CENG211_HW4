@@ -275,9 +275,26 @@ public class BoxPuzzle {
          */
         @Override
         public void displayRollSuccess(Direction direction, boolean hitFixedBox) {
-            String directionText = getDirectionText(direction);
+            String directionText;
+            // Per PDF: horizontal directions use "to the right/left", vertical use "upwards/downwards"
+            switch (direction) {
+                case RIGHT:
+                    directionText = "to the right";
+                    break;
+                case LEFT:
+                    directionText = "to the left";
+                    break;
+                case UP:
+                    directionText = "upwards";
+                    break;
+                case DOWN:
+                    directionText = "downwards";
+                    break;
+                default:
+                    directionText = direction.name().toLowerCase();
+            }
 
-            System.out.print("The chosen box and any box on its path have been rolled to the " + directionText);
+            System.out.print("The chosen box and any box on its path have been rolled " + directionText);
             if (hitFixedBox) {
                 System.out.println(" until a FixedBox has been reached.");
             } else {
@@ -369,7 +386,7 @@ public class BoxPuzzle {
          */
         public int[] selectEdgeBox() {
             while (true) {
-                System.out.print("Please enter the location of the edge box you want to roll: ");
+                System.out.print("Please enter the location of the edge box you want to roll (Can also accept \"1-2\"): ");
                 String input = scanner.nextLine();
 
                 // Check if user wants to view a box net
