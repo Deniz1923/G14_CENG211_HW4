@@ -398,7 +398,7 @@ public class BoxPuzzle {
                 // Parse the position input using validator
                 int[] position = validator.parsePosition(input);
                 if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format. Please reenter the location the correct Format: R#-C# or 1-2: ");
+                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the correct Format: R#-C# or 1-2: ");
                     continue;
                 }
 
@@ -488,13 +488,13 @@ public class BoxPuzzle {
          * Shows all 6 surfaces of the box in a cross-shaped layout.
          */
         public void viewBoxNet() {
-            System.out.print("Please enter the location of the box you want to view: ");
+            System.out.print("Please enter the location of the box you want to view in the format R#-C# or 1-2: ");
             String input = scanner.nextLine();
 
             // Parse position using validator
             int[] position = validator.parsePosition(input);
             if (position == null) {
-                System.out.println("INCORRECT INPUT: Invalid format!");
+                System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
                 return;
             }
 
@@ -526,7 +526,7 @@ public class BoxPuzzle {
                 // Parse the position input using validator
                 int[] position = validator.parsePosition(input);
                 if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format. Please reenter the location: ");
+                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
                     continue;
                 }
 
