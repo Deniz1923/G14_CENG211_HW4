@@ -340,13 +340,13 @@ public class BoxGrid {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        // Column headers - properly centered above each cell
-        sb.append("       C1      C2      C3      C4      C5      C6      C7      C8\n");
-        sb.append("--------------------------------------------------------------------------------\n");
+        // Column headers - matching PDF format exactly
+        sb.append("        C1      C2      C3      C4      C5      C6      C7      C8\n");
+        sb.append("-------------------------------------------------------------------------------\n");
 
         // Grid rows
         for (int row = 0; row < GRID_SIZE; row++) {
-            sb.append("R").append(row + 1).append(" | ");
+            sb.append("R").append(row + 1).append("  | ");
 
             for (int col = 0; col < GRID_SIZE; col++) {
                 Box box = getBox(row, col);
@@ -358,7 +358,7 @@ public class BoxGrid {
             }
 
             sb.append("\n");
-            sb.append("--------------------------------------------------------------------------------\n");
+            sb.append("-------------------------------------------------------------------------------\n");
         }
 
         return sb.toString();
