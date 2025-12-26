@@ -299,25 +299,15 @@ public class BoxPuzzle {
          */
         @Override
         public void displayRollSuccess(Direction direction, boolean hitFixedBox) {
-            String directionText;
+            String directionText = switch (direction) {
+                case RIGHT -> "to the right";
+                case LEFT -> "to the left";
+                case UP -> "upwards";
+                case DOWN -> "downwards";
+                // Default Not Needed
+            };
             // Per PDF: horizontal directions use "to the right/left", vertical use
             // "upwards/downwards"
-            switch (direction) {
-                case RIGHT:
-                    directionText = "to the right";
-                    break;
-                case LEFT:
-                    directionText = "to the left";
-                    break;
-                case UP:
-                    directionText = "upwards";
-                    break;
-                case DOWN:
-                    directionText = "downwards";
-                    break;
-                default:
-                    directionText = direction.name().toLowerCase();
-            }
 
             System.out.print("The chosen box and any box on its path have been rolled " + directionText);
             if (hitFixedBox) {
@@ -359,21 +349,19 @@ public class BoxPuzzle {
         public void displayToolUsed(SpecialTool tool, int row, int col) {
             String toolName = tool.getName();
 
-            if (toolName.equals("BoxFlipper")) {
-                System.out.println("The chosen box on location R" + (row + 1) + "-C" + (col + 1) +
+            switch (toolName) {
+                case "BoxFlipper" -> System.out.println("The chosen box on location R" + (row + 1) + "-C" + (col + 1) +
                         " has been flipped upside down.");
-            } else if (toolName.equals("PlusShapeStamp")) {
-                System.out.println("Top sides of the chosen box (R" + (row + 1) + "-C" + (col + 1) +
-                        ") and its surrounding boxes have been stamped to letter.");
-            } else if (toolName.equals("BoxFixer")) {
-                System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
+                case "PlusShapeStamp" ->
+                        System.out.println("Top sides of the chosen box (R" + (row + 1) + "-C" + (col + 1) +
+                                ") and its surrounding boxes have been stamped to letter.");
+                case "BoxFixer" -> System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
                         " has been fixed and cannot be moved.");
-            } else if (toolName.equals("MassRowStamp")) {
-                System.out.println("Top sides of all boxes in row " + (row + 1) + " have been stamped.");
-            } else if (toolName.equals("MassColumnStamp")) {
-                System.out.println("Top sides of all boxes in column " + (col + 1) + " have been stamped.");
-            } else {
-                System.out.println(toolName + " applied at R" + (row + 1) + "-C" + (col + 1) + "!");
+                case "MassRowStamp" ->
+                        System.out.println("Top sides of all boxes in row " + (row + 1) + " have been stamped.");
+                case "MassColumnStamp" ->
+                        System.out.println("Top sides of all boxes in column " + (col + 1) + " have been stamped.");
+                default -> System.out.println(toolName + " applied at R" + (row + 1) + "-C" + (col + 1) + "!");
             }
             System.out.println("The new state of the box grid:");
         }
@@ -488,18 +476,13 @@ public class BoxPuzzle {
          * Gets display text for a direction.
          */
         private String getDirectionText(Direction direction) {
-            switch (direction) {
-                case UP:
-                    return "upwards";
-                case DOWN:
-                    return "downwards";
-                case LEFT:
-                    return "left";
-                case RIGHT:
-                    return "right";
-                default:
-                    return direction.name().toLowerCase();
-            }
+            return switch (direction) {
+                case UP -> "upwards";
+                case DOWN -> "downwards";
+                case LEFT -> "left";
+                case RIGHT -> "right";
+                // Default Not Needed
+            };
         }
 
         /**
@@ -607,7 +590,7 @@ public class BoxPuzzle {
                     try {
                         int row = Integer.parseInt(input);
                         if (row >= 1 && row <= 8) {
-                            return new int[] { row - 1, 0 }; // Convert to 0-based, col doesn't matter
+                            return new int[]{row - 1, 0}; // Convert to 0-based, col doesn't matter
                         }
                         System.out.println("INCORRECT INPUT: Please enter a row number between 1 and 8.");
                     } catch (NumberFormatException e) {
@@ -625,7 +608,7 @@ public class BoxPuzzle {
                     try {
                         int col = Integer.parseInt(input);
                         if (col >= 1 && col <= 8) {
-                            return new int[] { 0, col - 1 }; // Convert to 0-based, row doesn't matter
+                            return new int[]{0, col - 1}; // Convert to 0-based, row doesn't matter
                         }
                         System.out.println("INCORRECT INPUT: Please enter a column number between 1 and 8.");
                     } catch (NumberFormatException e) {

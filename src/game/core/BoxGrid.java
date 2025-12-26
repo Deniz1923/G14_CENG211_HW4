@@ -153,16 +153,16 @@ public class BoxGrid {
     public Direction[] getCornerDirections(int row, int col) {
         // Top-left corner: can go right or down
         if (row == 0 && col == 0)
-            return new Direction[] { Direction.RIGHT, Direction.DOWN };
+            return new Direction[]{Direction.RIGHT, Direction.DOWN};
         // Top-right corner: can go left or down
         if (row == 0 && col == GRID_SIZE - 1)
-            return new Direction[] { Direction.LEFT, Direction.DOWN };
+            return new Direction[]{Direction.LEFT, Direction.DOWN};
         // Bottom-left corner: can go right or up
         if (row == GRID_SIZE - 1 && col == 0)
-            return new Direction[] { Direction.RIGHT, Direction.UP };
+            return new Direction[]{Direction.RIGHT, Direction.UP};
         // Bottom-right corner: can go left or up
         if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1)
-            return new Direction[] { Direction.LEFT, Direction.UP };
+            return new Direction[]{Direction.LEFT, Direction.UP};
         return null;
     }
 
@@ -274,7 +274,7 @@ public class BoxGrid {
     public boolean hasAnyMovableEdgeBox() {
         // Check top and bottom rows
         for (int col = 0; col < GRID_SIZE; col++) {
-            if (!(grid.get(0).get(col) instanceof FixedBox))
+            if (!(grid.getFirst().get(col) instanceof FixedBox))
                 return true;
             if (!(grid.get(GRID_SIZE - 1).get(col) instanceof FixedBox))
                 return true;
@@ -282,7 +282,7 @@ public class BoxGrid {
 
         // Check left and right columns (excluding corners already checked)
         for (int row = 1; row < GRID_SIZE - 1; row++) {
-            if (!(grid.get(row).get(0) instanceof FixedBox))
+            if (!(grid.get(row).getFirst() instanceof FixedBox))
                 return true;
             if (!(grid.get(row).get(GRID_SIZE - 1) instanceof FixedBox))
                 return true;

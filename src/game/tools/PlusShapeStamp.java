@@ -42,7 +42,7 @@ public class PlusShapeStamp extends SpecialTool {
     @Override
     public void apply(BoxGrid grid, char targetLetter, int row, int col) {
         // Offsets for plus shape: center, up, down, left, right
-        int[][] offsets = { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+        int[][] offsets = {{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
         for (int[] offset : offsets) {
             int targetRow = row + offset[0];
