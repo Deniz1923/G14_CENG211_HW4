@@ -1,6 +1,7 @@
 package game.menu;
 
 import game.core.BoxGrid;
+import game.exceptions.InvalidPositionException;
 import game.util.Direction;
 
 /**
@@ -20,12 +21,22 @@ public class InputValidator implements IValidator {
      * @param input the position string (will be converted to uppercase)
      * @return [row, col] as 0-based indices, or null if invalid format
      */
+    /**
+     * Parses a position string in format "R#-C#" or "#-#" to [row, col] array.
+     * Supports case-insensitive input as required by specification.
+     *
+     * @param input the position string (will be converted to uppercase)
+     * @return [row, col] as 0-based indices
+     * @throws InvalidPositionException if the format is invalid or position is out of bounds
+     */
     @Override
-    public int[] parsePosition(String input) {
+    public int[] parsePosition(String input) throws InvalidPositionException {
         try {
             String normalizedInput = input.trim().toUpperCase();
             String[] parts = normalizedInput.split("-");
-            if (parts.length != 2) return null;
+            if (parts.length != 2) {
+                throw new InvalidPositionException(input);
+            }
 
             int row, col;
 
@@ -40,15 +51,15 @@ public class InputValidator implements IValidator {
                 col = Integer.parseInt(parts[1]) - 1;
             }
 
-            // Validate bounds (return null if invalid instead of throwing)
+            // Validate bounds - throw exception if invalid
             if (!isValidPosition(row, col)) {
-                return null;
+                throw new InvalidPositionException(row + 1, col + 1);
             }
 
             return new int[]{row, col};
         } catch (NumberFormatException e) {
-            // Invalid number in input
-            return null;
+            // Invalid number in input - throw custom exception
+            throw new InvalidPositionException(input);
         }
     }
 

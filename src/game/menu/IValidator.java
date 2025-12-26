@@ -13,7 +13,9 @@ public interface IValidator {
      * Parses a position string in format "R#-C#" or "#-#" to [row, col] array.
      *
      * @param input the position string
-     * @return [row, col] as 0-based indices, or null if invalid format
+     * @return [row, col] as 0-based indices
+     * @throws game.exceptions.InvalidPositionException if the format is invalid or
+     *                                                  position is out of bounds
      */
     int[] parsePosition(String input);
 

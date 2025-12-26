@@ -3,6 +3,7 @@ package game.core;
 import game.boxes.Box;
 import game.exceptions.BoxAlreadyFixedException;
 import game.exceptions.EmptyBoxException;
+import game.exceptions.InvalidPositionException;
 import game.exceptions.UnmovableFixedBoxException;
 import game.menu.IMenuDisplay;
 import game.menu.IValidator;
@@ -353,14 +354,14 @@ public class BoxPuzzle {
                 case "BoxFlipper" -> System.out.println("The chosen box on location R" + (row + 1) + "-C" + (col + 1) +
                         " has been flipped upside down.");
                 case "PlusShapeStamp" ->
-                        System.out.println("Top sides of the chosen box (R" + (row + 1) + "-C" + (col + 1) +
-                                ") and its surrounding boxes have been stamped to letter.");
+                    System.out.println("Top sides of the chosen box (R" + (row + 1) + "-C" + (col + 1) +
+                            ") and its surrounding boxes have been stamped to letter.");
                 case "BoxFixer" -> System.out.println("The box on location R" + (row + 1) + "-C" + (col + 1) +
                         " has been fixed and cannot be moved.");
                 case "MassRowStamp" ->
-                        System.out.println("Top sides of all boxes in row " + (row + 1) + " have been stamped.");
+                    System.out.println("Top sides of all boxes in row " + (row + 1) + " have been stamped.");
                 case "MassColumnStamp" ->
-                        System.out.println("Top sides of all boxes in column " + (col + 1) + " have been stamped.");
+                    System.out.println("Top sides of all boxes in column " + (col + 1) + " have been stamped.");
                 default -> System.out.println(toolName + " applied at R" + (row + 1) + "-C" + (col + 1) + "!");
             }
             System.out.println("The new state of the box grid:");
@@ -412,25 +413,24 @@ public class BoxPuzzle {
                     continue;
                 }
 
-                // Parse the position input using validator
-                int[] position = validator.parsePosition(input);
-                if (position == null) {
-                    System.out.println(
-                            "INCORRECT INPUT: Invalid format! Please reenter the location in the correct Format: R#-C# or 1-2: ");
-                    continue;
+                try {
+                    // Parse the position input using validator (throws InvalidPositionException if
+                    // invalid)
+                    int[] position = validator.parsePosition(input);
+                    int row = position[0];
+                    int col = position[1];
+
+                    // Validate that the selected position is on the edge using validator
+                    if (!validator.isEdgePosition(row, col)) {
+                        System.out.println(
+                                "INCORRECT INPUT: The chosen box is not on any of the edges. Please reenter the location: ");
+                        continue;
+                    }
+
+                    return position;
+                } catch (InvalidPositionException e) {
+                    System.out.println("INCORRECT INPUT: " + e.getMessage());
                 }
-
-                int row = position[0];
-                int col = position[1];
-
-                // Validate that the selected position is on the edge using validator
-                if (!validator.isEdgePosition(row, col)) {
-                    System.out.println(
-                            "INCORRECT INPUT: The chosen box is not on any of the edges. Please reenter the location: ");
-                    continue;
-                }
-
-                return position;
             }
         }
 
@@ -513,17 +513,17 @@ public class BoxPuzzle {
                 System.out.print("Please enter the location of the box you want to view in the format R#-C# or 1-2: ");
                 String input = scanner.nextLine();
 
-                // Parse position using validator
-                int[] position = validator.parsePosition(input);
-                if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter:");
-                    continue;
-                }
+                try {
+                    // Parse position using validator (throws InvalidPositionException if invalid)
+                    int[] position = validator.parsePosition(input);
 
-                // Display the box net
-                System.out.println(grid.getBoxNet(position[0], position[1]));
-                System.out.println();
-                return;
+                    // Display the box net
+                    System.out.println(grid.getBoxNet(position[0], position[1]));
+                    System.out.println();
+                    return;
+                } catch (InvalidPositionException e) {
+                    System.out.println("INCORRECT INPUT: " + e.getMessage());
+                }
             }
         }
 
@@ -547,25 +547,24 @@ public class BoxPuzzle {
                     continue;
                 }
 
-                // Parse the position input using validator
-                int[] position = validator.parsePosition(input);
-                if (position == null) {
-                    System.out.println(
-                            "INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
-                    continue;
+                try {
+                    // Parse the position input using validator (throws InvalidPositionException if
+                    // invalid)
+                    int[] position = validator.parsePosition(input);
+                    int row = position[0];
+                    int col = position[1];
+
+                    // Validate selection is in rolled row/column using validator
+                    if (!validator.isInRolledPath(direction, edgeRow, edgeCol, row, col)) {
+                        System.out.println(
+                                "INCORRECT INPUT: The chosen box was not rolled during the first stage. Please reenter the location: ");
+                        continue;
+                    }
+
+                    return position;
+                } catch (InvalidPositionException e) {
+                    System.out.println("INCORRECT INPUT: " + e.getMessage());
                 }
-
-                int row = position[0];
-                int col = position[1];
-
-                // Validate selection is in rolled row/column using validator
-                if (!validator.isInRolledPath(direction, edgeRow, edgeCol, row, col)) {
-                    System.out.println(
-                            "INCORRECT INPUT: The chosen box was not rolled during the first stage. Please reenter the location: ");
-                    continue;
-                }
-
-                return position;
             }
         }
 
@@ -590,7 +589,7 @@ public class BoxPuzzle {
                     try {
                         int row = Integer.parseInt(input);
                         if (row >= 1 && row <= 8) {
-                            return new int[]{row - 1, 0}; // Convert to 0-based, col doesn't matter
+                            return new int[] { row - 1, 0 }; // Convert to 0-based, col doesn't matter
                         }
                         System.out.println("INCORRECT INPUT: Please enter a row number between 1 and 8.");
                     } catch (NumberFormatException e) {
@@ -608,7 +607,7 @@ public class BoxPuzzle {
                     try {
                         int col = Integer.parseInt(input);
                         if (col >= 1 && col <= 8) {
-                            return new int[]{0, col - 1}; // Convert to 0-based, row doesn't matter
+                            return new int[] { 0, col - 1 }; // Convert to 0-based, row doesn't matter
                         }
                         System.out.println("INCORRECT INPUT: Please enter a column number between 1 and 8.");
                     } catch (NumberFormatException e) {
@@ -622,14 +621,13 @@ public class BoxPuzzle {
                 System.out.print(tool.getUsagePrompt());
                 String input = scanner.nextLine();
 
-                // Parse position using validator
-                int[] position = validator.parsePosition(input);
-                if (position == null) {
-                    System.out.println("INCORRECT INPUT: Invalid format. Please reenter the location: ");
-                    continue;
+                try {
+                    // Parse position using validator (throws InvalidPositionException if invalid)
+                    int[] position = validator.parsePosition(input);
+                    return position;
+                } catch (InvalidPositionException e) {
+                    System.out.println("INCORRECT INPUT: " + e.getMessage());
                 }
-
-                return position;
             }
         }
 
