@@ -498,9 +498,15 @@ public class BoxPuzzle {
          * @return true if user wants to view, false otherwise
          */
         public boolean askViewSurfaces() {
-            System.out.print("---> Do you want to view all surfaces of a box? [1] Yes or [2] No? ");
-            String input = scanner.nextLine().trim();
-            return input.equals("1") || input.equalsIgnoreCase("yes");
+            while (true) {
+                System.out.print("---> Do you want to view all surfaces of a box? [1] Yes or [2] No? ");
+                String input = scanner.nextLine().trim();
+                if (input.equals("1"))
+                    return true;
+                if (input.equals("2"))
+                    return false;
+                System.out.println("Invalid choice. Please enter 1 or 2:");
+            }
         }
 
         /**
@@ -508,20 +514,22 @@ public class BoxPuzzle {
          * Shows all 6 surfaces of the box in a cross-shaped layout.
          */
         public void viewBoxNet() {
-            System.out.print("Please enter the location of the box you want to view in the format R#-C# or 1-2: ");
-            String input = scanner.nextLine();
+            while (true) {
+                System.out.print("Please enter the location of the box you want to view in the format R#-C# or 1-2: ");
+                String input = scanner.nextLine();
 
-            // Parse position using validator
-            int[] position = validator.parsePosition(input);
-            if (position == null) {
-                System.out.println(
-                        "INCORRECT INPUT: Invalid format! Please reenter the location in the format R#-C# or 1-2: ");
+                // Parse position using validator
+                int[] position = validator.parsePosition(input);
+                if (position == null) {
+                    System.out.println("INCORRECT INPUT: Invalid format! Please reenter:");
+                    continue;
+                }
+
+                // Display the box net
+                System.out.println(grid.getBoxNet(position[0], position[1]));
+                System.out.println();
                 return;
             }
-
-            // Display the box net
-            System.out.println(grid.getBoxNet(position[0], position[1]));
-            System.out.println();
         }
 
         /**
