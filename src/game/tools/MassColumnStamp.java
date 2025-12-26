@@ -44,4 +44,14 @@ public class MassColumnStamp extends SpecialTool {
             }
         }
     }
+
+    /**
+     * Returns the prompt for column selection.
+     *
+     * @return prompt asking for column number (1-8)
+     */
+    @Override
+    public String getUsagePrompt() {
+        return "Please enter the column number (1-8) to stamp: ";
+    }
 }

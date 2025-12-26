@@ -52,4 +52,14 @@ public class BoxFlipper extends SpecialTool {
         // Flip the box (swaps top and bottom)
         targetBox.flip();
     }
+
+    /**
+     * Returns the prompt for box selection.
+     *
+     * @return prompt asking for box location
+     */
+    @Override
+    public String getUsagePrompt() {
+        return "Please enter the location of the box to flip (R#-C#): ";
+    }
 }

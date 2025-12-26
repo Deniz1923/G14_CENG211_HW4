@@ -58,4 +58,14 @@ public class BoxFixer extends SpecialTool {
         // Replace the original box with the new FixedBox
         grid.setBox(row, col, fixedBox);
     }
+
+    /**
+     * Returns the prompt for box selection.
+     *
+     * @return prompt asking for box location
+     */
+    @Override
+    public String getUsagePrompt() {
+        return "Please enter the location of the box to fix (R#-C#): ";
+    }
 }

@@ -44,4 +44,14 @@ public class MassRowStamp extends SpecialTool {
             }
         }
     }
+
+    /**
+     * Returns the prompt for row selection.
+     *
+     * @return prompt asking for row number (1-8)
+     */
+    @Override
+    public String getUsagePrompt() {
+        return "Please enter the row number (1-8) to stamp: ";
+    }
 }

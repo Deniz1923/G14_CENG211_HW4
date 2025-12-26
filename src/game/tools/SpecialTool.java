@@ -63,6 +63,15 @@ public abstract class SpecialTool {
             throws BoxAlreadyFixedException, UnmovableFixedBoxException;
 
     /**
+     * Returns the prompt text for user input when using this tool.
+     * MassRowStamp prompts for row, MassColumnStamp for column, others for
+     * position.
+     *
+     * @return the usage prompt string
+     */
+    public abstract String getUsagePrompt();
+
+    /**
      * Returns a string representation of this tool.
      *
      * @return the tool name

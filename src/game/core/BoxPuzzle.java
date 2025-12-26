@@ -77,9 +77,10 @@ public class BoxPuzzle {
             // FIRST STAGE: Edge box selection and rolling
             menu.displayFirstStageHeader(currentTurn);
 
-            // Store selected edge position for use in catch block
+            // Store selected edge position and direction for use in catch block
             int edgeRow = -1;
             int edgeCol = -1;
+            Direction chosenDirection = null;
 
             try {
                 // Get player's edge box selection
@@ -89,7 +90,6 @@ public class BoxPuzzle {
 
                 // Handle corner case - player must choose direction (corners have 2 valid
                 // directions)
-                Direction chosenDirection = null;
                 if (grid.isCorner(edgeRow, edgeCol)) {
                     chosenDirection = menu.selectCornerDirection(edgeRow, edgeCol);
                 }
@@ -119,23 +119,15 @@ public class BoxPuzzle {
 
                 // Tool usage is mandatory when a tool is acquired
                 if (tool != null) {
-                    int[] toolPosition = menu.selectBoxForTool(tool);
-                    try {
-                        // Apply the tool to the selected box
-                        tool.apply(grid, targetLetter, toolPosition[0], toolPosition[1]);
-                        menu.displayToolUsed(tool, toolPosition[0], toolPosition[1]);
-                        menu.displayGrid(grid.toString());
-                    } catch (BoxAlreadyFixedException | UnmovableFixedBoxException e) {
-                        // Tool application failed (e.g., BoxFixer on FixedBox)
-                        menu.displayError(e.getMessage());
-                    }
+                    useTool(tool);
                 }
 
             } catch (UnmovableFixedBoxException e) {
                 // Selected edge box was a FixedBox - turn is wasted
                 // Use the already captured edgeRow/edgeCol instead of calling selectEdgeBox
                 // again
-                Direction displayDirection = grid.getRollDirection(edgeRow, edgeCol);
+                Direction displayDirection = (chosenDirection != null) ? chosenDirection
+                        : grid.getRollDirection(edgeRow, edgeCol);
                 menu.displayFixedBoxError(displayDirection);
             }
 
@@ -144,6 +136,26 @@ public class BoxPuzzle {
 
         // All turns completed - end the game
         endGame();
+    }
+
+    /**
+     * Applies a special tool to the grid using generics.
+     * This method satisfies the requirement for a generic useTool method.
+     *
+     * @param tool the tool to use, must extend SpecialTool
+     * @param <T>  the type of the tool
+     */
+    private <T extends SpecialTool> void useTool(T tool) {
+        int[] toolPosition = menu.selectBoxForTool(tool);
+        try {
+            // Apply the tool to the selected box
+            tool.apply(grid, targetLetter, toolPosition[0], toolPosition[1]);
+            menu.displayToolUsed(tool, toolPosition[0], toolPosition[1]);
+            menu.displayGrid(grid.toString());
+        } catch (BoxAlreadyFixedException | UnmovableFixedBoxException e) {
+            // Tool application failed (e.g., BoxFixer on FixedBox)
+            menu.displayError(e.getMessage());
+        }
     }
 
     /**
@@ -575,16 +587,56 @@ public class BoxPuzzle {
         }
 
         /**
-         * Prompts user to select any box for tool application.
-         * Format matches PDF: "Please enter the location of the box to use this
-         * SpecialTool: "
+         * Prompts user to select target for tool application.
+         * Uses tool-specific prompts: MassRowStamp asks for row, MassColumnStamp for
+         * column,
+         * others for position.
          *
          * @param tool the tool being applied
-         * @return [row, col] of selected box (0-based indices)
+         * @return [row, col] of selected target (0-based indices)
          */
         public int[] selectBoxForTool(SpecialTool tool) {
+            String toolName = tool.getName();
+
+            // MassRowStamp: prompt for row only (col is irrelevant)
+            if (toolName.equals("MassRowStamp")) {
+                while (true) {
+                    System.out.print(tool.getUsagePrompt());
+                    String input = scanner.nextLine().trim();
+
+                    try {
+                        int row = Integer.parseInt(input);
+                        if (row >= 1 && row <= 8) {
+                            return new int[] { row - 1, 0 }; // Convert to 0-based, col doesn't matter
+                        }
+                        System.out.println("INCORRECT INPUT: Please enter a row number between 1 and 8.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("INCORRECT INPUT: Please enter a valid row number (1-8).");
+                    }
+                }
+            }
+
+            // MassColumnStamp: prompt for column only (row is irrelevant)
+            if (toolName.equals("MassColumnStamp")) {
+                while (true) {
+                    System.out.print(tool.getUsagePrompt());
+                    String input = scanner.nextLine().trim();
+
+                    try {
+                        int col = Integer.parseInt(input);
+                        if (col >= 1 && col <= 8) {
+                            return new int[] { 0, col - 1 }; // Convert to 0-based, row doesn't matter
+                        }
+                        System.out.println("INCORRECT INPUT: Please enter a column number between 1 and 8.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("INCORRECT INPUT: Please enter a valid column number (1-8).");
+                    }
+                }
+            }
+
+            // All other tools: prompt for position (R#-C# format)
             while (true) {
-                System.out.print("Please enter the location of the box to use this SpecialTool: ");
+                System.out.print(tool.getUsagePrompt());
                 String input = scanner.nextLine();
 
                 // Parse position using validator

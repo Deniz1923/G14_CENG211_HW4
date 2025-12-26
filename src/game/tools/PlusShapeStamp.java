@@ -42,7 +42,7 @@ public class PlusShapeStamp extends SpecialTool {
     @Override
     public void apply(BoxGrid grid, char targetLetter, int row, int col) {
         // Offsets for plus shape: center, up, down, left, right
-        int[][] offsets = {{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int[][] offsets = { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
 
         for (int[] offset : offsets) {
             int targetRow = row + offset[0];
@@ -60,5 +60,15 @@ public class PlusShapeStamp extends SpecialTool {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the prompt for center position selection.
+     *
+     * @return prompt asking for center location
+     */
+    @Override
+    public String getUsagePrompt() {
+        return "Please enter the center location of the plus stamp (R#-C#): ";
     }
 }

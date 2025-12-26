@@ -4,6 +4,7 @@ import game.boxes.Box;
 import game.boxes.FixedBox;
 import game.exceptions.UnmovableFixedBoxException;
 import game.util.Direction;
+import game.util.GridDisplayFormatter;
 import game.util.RandUtil;
 
 import java.util.ArrayList;
@@ -152,16 +153,16 @@ public class BoxGrid {
     public Direction[] getCornerDirections(int row, int col) {
         // Top-left corner: can go right or down
         if (row == 0 && col == 0)
-            return new Direction[]{Direction.RIGHT, Direction.DOWN};
+            return new Direction[] { Direction.RIGHT, Direction.DOWN };
         // Top-right corner: can go left or down
         if (row == 0 && col == GRID_SIZE - 1)
-            return new Direction[]{Direction.LEFT, Direction.DOWN};
+            return new Direction[] { Direction.LEFT, Direction.DOWN };
         // Bottom-left corner: can go right or up
         if (row == GRID_SIZE - 1 && col == 0)
-            return new Direction[]{Direction.RIGHT, Direction.UP};
+            return new Direction[] { Direction.RIGHT, Direction.UP };
         // Bottom-right corner: can go left or up
         if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1)
-            return new Direction[]{Direction.LEFT, Direction.UP};
+            return new Direction[] { Direction.LEFT, Direction.UP };
         return null;
     }
 
@@ -338,30 +339,6 @@ public class BoxGrid {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        // Horizontal separator line (65 dashes)
-        String horizontalLine = " -----------------------------------------------------------------";
-
-        // Column headers with proper spacing
-        sb.append("       C1      C2      C3      C4      C5      C6      C7      C8\n");
-        sb.append(horizontalLine).append("\n");
-
-        // Grid rows (R1 through R8)
-        for (int row = 0; row < GRID_SIZE; row++) {
-            sb.append("R").append(row + 1).append(" |");
-            for (int col = 0; col < GRID_SIZE; col++) {
-                Box box = getBox(row, col);
-                char type = box.getTypeChar(); // R, U, or X
-                char topSide = box.getTopSide(); // A-H
-                // Status: O if opened or FixedBox, M if mystery (unopened)
-                char status = (box.hasBeenOpened() || box instanceof FixedBox) ? 'O' : 'M';
-                sb.append(String.format(" %c-%c-%c |", type, topSide, status));
-            }
-            sb.append("\n");
-            sb.append(horizontalLine).append("\n");
-        }
-
-        return sb.toString();
+        return GridDisplayFormatter.formatGrid(this);
     }
 }
