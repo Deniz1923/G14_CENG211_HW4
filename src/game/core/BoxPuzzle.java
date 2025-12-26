@@ -255,7 +255,7 @@ public class BoxPuzzle {
             System.out.println();
             System.out.println("Welcome to Box Top Side Matching Puzzle App. An 8x8 box grid is being generated.");
             System.out.println(
-                    "Your goal is to maximize the letter \"" + targetLetter + "\" on the top sides of the boxes.");
+                    "Your goal is to maximize the letter '" + targetLetter + "' on the top sides of the boxes.");
             System.out.println();
         }
 
@@ -264,7 +264,7 @@ public class BoxPuzzle {
          */
         @Override
         public void displayTurnHeader(int turn) {
-            System.out.println("------> TURN " + turn + ":");
+            System.out.println("=====> TURN " + turn + ":");
         }
 
         /**

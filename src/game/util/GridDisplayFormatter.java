@@ -11,7 +11,7 @@ import game.core.BoxGrid;
  */
 public class GridDisplayFormatter {
     private static final int GRID_SIZE = 8;
-    private static final String HORIZONTAL_LINE = " -----------------------------------------------------------------";
+    private static final String HORIZONTAL_LINE = "   -----------------------------------------------------------------";
     private static final String CELL_FORMAT = " %c-%c-%c |";
 
     /**
@@ -31,7 +31,7 @@ public class GridDisplayFormatter {
         StringBuilder sb = new StringBuilder();
 
         // Column headers
-        sb.append("       C1      C2      C3      C4      C5      C6      C7      C8\n");
+        sb.append("      C1     C2     C3     C4     C5     C6     C7     C8\n");
         sb.append(HORIZONTAL_LINE).append("\n");
 
         // Grid rows
