@@ -86,9 +86,11 @@ public interface IMenuDisplay {
     /**
      * Displays the end of game message with final score.
      *
-     * @param gridString   the final grid state
-     * @param targetLetter the target letter
-     * @param matchCount   the count of matching boxes
+     * @param gridString     the final grid state
+     * @param targetLetter   the target letter
+     * @param matchCount     the count of matching boxes
+     * @param gameEndedEarly true if game ended early (FAILURE), false for normal
+     *                       end (SUCCESS)
      */
-    void displayGameEnd(String gridString, char targetLetter, int matchCount);
+    void displayGameEnd(String gridString, char targetLetter, int matchCount, boolean gameEndedEarly);
 }

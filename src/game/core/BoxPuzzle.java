@@ -35,6 +35,9 @@ public class BoxPuzzle {
     // Tracks the current turn number (1 to 5)
     private int currentTurn;
 
+    // Tracks if game ended early due to no movable edge boxes (FAILURE condition)
+    private boolean gameEndedEarly;
+
     /**
      * Constructs a new BoxPuzzle game and starts gameplay.
      * Initializes the grid, selects a random target letter, and begins the game
@@ -45,6 +48,7 @@ public class BoxPuzzle {
         this.targetLetter = RandUtil.generateTargetLetter();
         this.menu = new MenuHandler();
         this.currentTurn = 1;
+        this.gameEndedEarly = false;
 
         startGame();
     }
@@ -63,7 +67,7 @@ public class BoxPuzzle {
         while (currentTurn <= TOTAL_TURNS) {
             // Check if any moves can be made (edge case: all edge boxes are FixedBoxes)
             if (!grid.hasAnyMovableEdgeBox()) {
-                menu.displayError("No movable edge boxes remain! Game ending early.");
+                gameEndedEarly = true;
                 break;
             }
 
@@ -201,7 +205,7 @@ public class BoxPuzzle {
      */
     private void endGame() {
         int matchCount = grid.countMatchingBoxes(targetLetter);
-        menu.displayGameEnd(grid.toString(), targetLetter, matchCount);
+        menu.displayGameEnd(grid.toString(), targetLetter, matchCount, gameEndedEarly);
         menu.close();
     }
 
@@ -377,17 +381,24 @@ public class BoxPuzzle {
 
         /**
          * Displays the end of game message with final score.
+         * Shows FAILURE if game ended early, SUCCESS if completed normally.
          * Format matches PDF specification.
          */
         @Override
-        public void displayGameEnd(String gridString, char targetLetter, int matchCount) {
+        public void displayGameEnd(String gridString, char targetLetter, int matchCount, boolean gameEndedEarly) {
             System.out.println();
             System.out.println("******** GAME OVER ********");
             System.out.println();
             System.out.println("The final state of the box grid:");
             System.out.println(gridString);
-            System.out
-                    .println("The total number of \"" + targetLetter + "\" letters on top sides: " + matchCount + ".");
+            System.out.println(
+                    "THE TOTAL NUMBER OF TARGET LETTER \"" + targetLetter + "\" IN THE BOX GRID --> " + matchCount);
+            System.out.println();
+            if (gameEndedEarly) {
+                System.out.println("The game has ended with FAILURE! No movable edge boxes remain.");
+            } else {
+                System.out.println("The game has been SUCCESSFULLY completed!");
+            }
         }
 
         // =====================================================================
