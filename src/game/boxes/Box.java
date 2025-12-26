@@ -6,12 +6,14 @@ import game.util.RandUtil;
 
 /**
  * Abstract base class representing a box in the puzzle game.
- * Each box has 6 surfaces with letters (A-H), can contain a tool, and tracks open/empty state.
+ * Each box has 6 surfaces with letters (A-H), can contain a tool, and tracks
+ * open/empty state.
  * <p>
  * Box surfaces are indexed as follows:
  * 0 = Top, 1 = Bottom, 2 = Front, 3 = Back, 4 = Left, 5 = Right
  * <p>
- * Subclasses (RegularBox, UnchangingBox, FixedBox) define specific behaviors for:
+ * Subclasses (RegularBox, UnchangingBox, FixedBox) define specific behaviors
+ * for:
  * - Rolling (rotating the box in a direction)
  * - Stamping (changing the top side letter)
  * - Fixing (converting to immovable state)
@@ -180,31 +182,14 @@ public abstract class Box {
     public abstract boolean canRoll();
 
     /**
-     * Rotates 4 surfaces in a cycle: a -> b -> c -> d -> a
-     * Helper method for the roll operation.
-     *
-     * @param a first surface index
-     * @param b second surface index
-     * @param c third surface index
-     * @param d fourth surface index
-     */
-    private void swapSurfaces(int a, int b, int c, int d) {
-        char temp = surfaces[a];
-        surfaces[a] = surfaces[b];
-        surfaces[b] = surfaces[c];
-        surfaces[c] = surfaces[d];
-        surfaces[d] = temp;
-    }
-
-    /**
      * Rolls the box in the specified direction using the Direction enum.
      * Rolling rotates 4 surfaces cyclically while 2 remain unchanged.
      * <p>
-     * Direction effects:
-     * - RIGHT: Top -> Left -> Bottom -> Right -> Top
-     * - LEFT: Top -> Right -> Bottom -> Left -> Top
-     * - UP: Top -> Front -> Bottom -> Back -> Top
-     * - DOWN: Top -> Back -> Bottom -> Front -> Top
+     * Direction effects (per PDF specification):
+     * - RIGHT: Right → Top, Top → Left, Left → Bottom, Bottom → Right
+     * - LEFT: Left → Top, Top → Right, Right → Bottom, Bottom → Left
+     * - UP: Front → Top, Top → Back, Back → Bottom, Bottom → Front
+     * - DOWN: Back → Top, Top → Front, Front → Bottom, Bottom → Back
      *
      * @param direction the Direction enum value
      * @throws IllegalArgumentException if direction is null
@@ -214,22 +199,39 @@ public abstract class Box {
             throw new IllegalArgumentException("Direction cannot be null.");
         }
 
+        char temp;
         switch (direction) {
             case RIGHT:
-                // Rolling right: Top moves to where Left was, Left to Bottom, etc.
-                swapSurfaces(TOP, LEFT, BOTTOM, RIGHT);
+                // Rolling right: LEFT→TOP→RIGHT→BOTTOM→LEFT
+                temp = surfaces[LEFT];
+                surfaces[LEFT] = surfaces[BOTTOM];
+                surfaces[BOTTOM] = surfaces[RIGHT];
+                surfaces[RIGHT] = surfaces[TOP];
+                surfaces[TOP] = temp;
                 break;
             case LEFT:
-                // Rolling left: Top moves to where Right was, Right to Bottom, etc.
-                swapSurfaces(TOP, RIGHT, BOTTOM, LEFT);
+                // Rolling left: RIGHT→TOP→LEFT→BOTTOM→RIGHT
+                temp = surfaces[RIGHT];
+                surfaces[RIGHT] = surfaces[BOTTOM];
+                surfaces[BOTTOM] = surfaces[LEFT];
+                surfaces[LEFT] = surfaces[TOP];
+                surfaces[TOP] = temp;
                 break;
             case UP:
-                // Rolling up (away from viewer): Top moves to where Front was
-                swapSurfaces(TOP, FRONT, BOTTOM, BACK);
+                // Rolling up (forward): FRONT→TOP→BACK→BOTTOM→FRONT
+                temp = surfaces[FRONT];
+                surfaces[FRONT] = surfaces[BOTTOM];
+                surfaces[BOTTOM] = surfaces[BACK];
+                surfaces[BACK] = surfaces[TOP];
+                surfaces[TOP] = temp;
                 break;
             case DOWN:
-                // Rolling down (toward viewer): Top moves to where Back was
-                swapSurfaces(TOP, BACK, BOTTOM, FRONT);
+                // Rolling down (backward): BACK→TOP→FRONT→BOTTOM→BACK
+                temp = surfaces[BACK];
+                surfaces[BACK] = surfaces[BOTTOM];
+                surfaces[BOTTOM] = surfaces[FRONT];
+                surfaces[FRONT] = surfaces[TOP];
+                surfaces[TOP] = temp;
                 break;
         }
     }
