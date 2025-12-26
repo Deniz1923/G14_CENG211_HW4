@@ -23,7 +23,7 @@ public class GridDisplayFormatter {
     /**
      * Returns a formatted string representation of the entire grid.
      * Includes column headers (C1-C8) and row labels (R1-R8).
-     * 
+     *
      * @param grid The BoxGrid to format
      * @return The formatted grid string
      */
@@ -57,7 +57,7 @@ public class GridDisplayFormatter {
     /**
      * Returns a formatted representation of a single box.
      * Format: "TYPE-LETTER-CONTENT" (e.g., "R-E-M")
-     * 
+     *
      * @param box The box to format
      * @return The formatted box string
      */
@@ -70,7 +70,7 @@ public class GridDisplayFormatter {
 
     /**
      * Returns an ASCII cube diagram showing all 6 surfaces of a box.
-     * 
+     *
      * @param box The box to display
      * @return The formatted cube diagram
      */
@@ -91,7 +91,7 @@ public class GridDisplayFormatter {
 
     /**
      * Returns a simplified horizontal line for the grid.
-     * 
+     *
      * @return The horizontal line string
      */
     public static String getHorizontalLine() {

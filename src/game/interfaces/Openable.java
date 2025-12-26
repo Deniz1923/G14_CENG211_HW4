@@ -11,7 +11,7 @@ public interface Openable {
 
     /**
      * Opens the object and returns its contents.
-     * 
+     *
      * @return The SpecialTool contained in the object
      * @throws EmptyBoxException if the object contains no tool
      */
@@ -19,14 +19,14 @@ public interface Openable {
 
     /**
      * Checks if the object has already been opened.
-     * 
+     *
      * @return true if already opened, false otherwise
      */
     boolean hasBeenOpened();
 
     /**
      * Checks if the object contains no tool.
-     * 
+     *
      * @return true if the object is empty, false otherwise
      */
     boolean isEmpty();

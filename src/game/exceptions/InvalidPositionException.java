@@ -10,7 +10,7 @@ public class InvalidPositionException extends RuntimeException {
 
     /**
      * Constructs an InvalidPositionException with coordinates.
-     * 
+     *
      * @param row The invalid row value
      * @param col The invalid column value
      */
@@ -20,7 +20,7 @@ public class InvalidPositionException extends RuntimeException {
 
     /**
      * Constructs an InvalidPositionException with an unparseable input string.
-     * 
+     *
      * @param input The invalid input string
      */
     public InvalidPositionException(String input) {

@@ -7,9 +7,9 @@ import game.util.RandUtil;
  * Manages the overall state of the game across all 5 turns.
  */
 public class GameState {
+    private static final int MAX_TURNS = 5; // Maximum turns allowed
     private final char targetLetter; // Randomly selected target (A-H)
     private int currentTurn; // Current turn number (1-5)
-    private static final int MAX_TURNS = 5; // Maximum turns allowed
     private boolean gameOver; // Game termination flag
     private boolean gameSuccess; // Success/failure status
 
@@ -26,7 +26,7 @@ public class GameState {
 
     /**
      * Returns the target letter for this game.
-     * 
+     *
      * @return The target letter (A-H)
      */
     public char getTargetLetter() {
@@ -35,7 +35,7 @@ public class GameState {
 
     /**
      * Returns the current turn number.
-     * 
+     *
      * @return Current turn (1-5)
      */
     public int getCurrentTurn() {
@@ -44,7 +44,7 @@ public class GameState {
 
     /**
      * Returns the maximum number of turns.
-     * 
+     *
      * @return The max turns (5)
      */
     public int getMaxTurns() {
@@ -64,7 +64,7 @@ public class GameState {
 
     /**
      * Checks if the game has ended.
-     * 
+     *
      * @return true if game is over
      */
     public boolean isGameOver() {
@@ -73,7 +73,7 @@ public class GameState {
 
     /**
      * Sets the game over status with success/failure flag.
-     * 
+     *
      * @param success true for successful completion, false for failure
      */
     public void setGameOver(boolean success) {
@@ -83,7 +83,7 @@ public class GameState {
 
     /**
      * Checks if the game ended successfully.
-     * 
+     *
      * @return true if game ended with success
      */
     public boolean isGameSuccess() {
@@ -92,7 +92,7 @@ public class GameState {
 
     /**
      * Checks if there are remaining turns.
-     * 
+     *
      * @return true if more turns are available
      */
     public boolean hasRemainingTurns() {

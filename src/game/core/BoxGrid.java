@@ -152,16 +152,16 @@ public class BoxGrid {
     public Direction[] getCornerDirections(int row, int col) {
         // Top-left corner: can go right or down
         if (row == 0 && col == 0)
-            return new Direction[] { Direction.RIGHT, Direction.DOWN };
+            return new Direction[]{Direction.RIGHT, Direction.DOWN};
         // Top-right corner: can go left or down
         if (row == 0 && col == GRID_SIZE - 1)
-            return new Direction[] { Direction.LEFT, Direction.DOWN };
+            return new Direction[]{Direction.LEFT, Direction.DOWN};
         // Bottom-left corner: can go right or up
         if (row == GRID_SIZE - 1 && col == 0)
-            return new Direction[] { Direction.RIGHT, Direction.UP };
+            return new Direction[]{Direction.RIGHT, Direction.UP};
         // Bottom-right corner: can go left or up
         if (row == GRID_SIZE - 1 && col == GRID_SIZE - 1)
-            return new Direction[] { Direction.LEFT, Direction.UP };
+            return new Direction[]{Direction.LEFT, Direction.UP};
         return null;
     }
 

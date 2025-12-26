@@ -131,6 +131,15 @@ public abstract class Box implements Rollable, Stampable, Openable {
     }
 
     /**
+     * Sets the open status of the box.
+     *
+     * @param open true if the box has been opened
+     */
+    public void setOpen(boolean open) {
+        this.isOpen = open;
+    }
+
+    /**
      * Checks if the box has already been opened (Openable interface method).
      *
      * @return true if already opened, false otherwise
@@ -138,15 +147,6 @@ public abstract class Box implements Rollable, Stampable, Openable {
     @Override
     public boolean hasBeenOpened() {
         return isOpen;
-    }
-
-    /**
-     * Sets the open status of the box.
-     *
-     * @param open true if the box has been opened
-     */
-    public void setOpen(boolean open) {
-        this.isOpen = open;
     }
 
     /**
